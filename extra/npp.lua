@@ -25,6 +25,7 @@ local size = 10
 property['style.default'] = 'font:'..font..',size:'..size..
                             ',fore:$(color.black),back:$(color.white)'
 
+-- Token styles.
 property['style.nothing'] = ''
 property['style.class'] = 'fore:$(color.black),bold'
 property['style.comment'] = 'fore:$(color.green)'
@@ -39,7 +40,6 @@ property['style.operator'] = 'fore:$(color.darkblue),bold'
 property['style.regex'] = 'fore:$(color.purple)'
 property['style.string'] = 'fore:$(color.grey)'
 property['style.preprocessor'] = 'fore:$(color.brown)'
-property['style.preproc'] = 'fore:$(color.brown)'
 property['style.tag'] = 'fore:$(color.blue)'
 property['style.type'] = 'fore:$(color.purple)'
 property['style.variable'] = 'fore:$(color.black)'
@@ -47,7 +47,7 @@ property['style.whitespace'] = ''
 property['style.embedded'] = 'fore:$(color.blue)'
 property['style.identifier'] = '$(style.nothing)'
 
-
+-- Predefined styles.
 property['style.linenumber'] = 'fore:$(color.grey),back:#E4E4E4'
 property['style.bracelight'] = 'fore:#0000FF,bold'
 property['style.bracebad'] = 'fore:#FF0000,bold'
