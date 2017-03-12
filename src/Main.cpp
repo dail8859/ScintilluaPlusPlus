@@ -266,6 +266,11 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 
 				auto language = DetermineLanguageFromFileName(UTF8FromString(ext).c_str());
 				if (!language.empty()) {
+					std::wstring ws(StringFromUTF8(language));
+					ws += L" (lpeg)";
+
+					SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
+
 					wchar_t config_dir[MAX_PATH] = { 0 };
 					SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
 					wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++");
@@ -273,16 +278,14 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 					editor.SetLexerLanguage("lpeg");
 					editor.SetProperty("lexer.lpeg.home", UTF8FromString(config_dir).c_str());
 					editor.SetProperty("lexer.lpeg.color.theme", config.theme.c_str());
+					editor.SetProperty("fold", "1");
 
 					editor.PrivateLexerCall(SCI_GETDIRECTFUNCTION, editor.GetDirectFunction());
 					editor.PrivateLexerCall(SCI_SETDOCPOINTER, editor.GetDirectPointer());
 					editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<int>(language.c_str()));
+
 					editor.Colourise(0, -1);
 
-					std::wstring ws(StringFromUTF8(language));
-					ws += L" (lpeg)";
-
-					SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
 				}
 			}
 			break;
