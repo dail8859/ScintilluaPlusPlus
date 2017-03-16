@@ -284,8 +284,10 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 					editor.PrivateLexerCall(SCI_SETDOCPOINTER, editor.GetDirectPointer());
 					editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<int>(language.c_str()));
 
-					editor.Colourise(0, -1);
+					// Always show the folding margin. Since N++ doesn't recognize the file it won't have the margin showing.
+					editor.SetMarginWidthN(2, 14);
 
+					editor.Colourise(0, -1);
 				}
 			}
 			break;
