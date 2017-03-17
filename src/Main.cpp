@@ -22,156 +22,19 @@
 #include "resource.h"
 #include "Config.h"
 #include "ScintillaGateway.h"
-#include <vector>
+#include "Utilities.h"
 
 static HANDLE _hModule;
 static NppData nppData;
 static Configuration config;
 
 // Helper functions
-static HWND getCurrentScintilla();
+static HWND GetCurrentScintilla();
 static bool DetermineLanguageFromFileName();
 
 // Menu callbacks
 static void editSettings();
 static void showAbout();
-
-enum { SURROGATE_LEAD_FIRST = 0xD800 };
-enum { SURROGATE_TRAIL_FIRST = 0xDC00 };
-enum { SURROGATE_TRAIL_LAST = 0xDFFF };
-static unsigned int UTF8Length(const wchar_t *uptr, size_t tlen) {
-	unsigned int len = 0;
-	for (size_t i = 0; i < tlen && uptr[i];) {
-		unsigned int uch = uptr[i];
-		if (uch < 0x80) {
-			len++;
-		}
-		else if (uch < 0x800) {
-			len += 2;
-		}
-		else if ((uch >= SURROGATE_LEAD_FIRST) &&
-			(uch <= SURROGATE_TRAIL_LAST)) {
-			len += 4;
-			i++;
-		}
-		else {
-			len += 3;
-		}
-		i++;
-	}
-	return len;
-}
-
-static size_t UTF16Length(const char *s, unsigned int len) {
-	size_t ulen = 0;
-	size_t charLen;
-	for (size_t i = 0; i<len;) {
-		unsigned char ch = static_cast<unsigned char>(s[i]);
-		if (ch < 0x80) {
-			charLen = 1;
-		}
-		else if (ch < 0x80 + 0x40 + 0x20) {
-			charLen = 2;
-		}
-		else if (ch < 0x80 + 0x40 + 0x20 + 0x10) {
-			charLen = 3;
-		}
-		else {
-			charLen = 4;
-			ulen++;
-		}
-		i += charLen;
-		ulen++;
-	}
-	return ulen;
-}
-
-static void UTF8FromUTF16(const wchar_t *uptr, size_t tlen, char *putf, size_t len) {
-	int k = 0;
-	for (size_t i = 0; i < tlen && uptr[i];) {
-		unsigned int uch = uptr[i];
-		if (uch < 0x80) {
-			putf[k++] = static_cast<char>(uch);
-		}
-		else if (uch < 0x800) {
-			putf[k++] = static_cast<char>(0xC0 | (uch >> 6));
-			putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
-		}
-		else if ((uch >= SURROGATE_LEAD_FIRST) &&
-			(uch <= SURROGATE_TRAIL_LAST)) {
-			// Half a surrogate pair
-			i++;
-			unsigned int xch = 0x10000 + ((uch & 0x3ff) << 10) + (uptr[i] & 0x3ff);
-			putf[k++] = static_cast<char>(0xF0 | (xch >> 18));
-			putf[k++] = static_cast<char>(0x80 | ((xch >> 12) & 0x3f));
-			putf[k++] = static_cast<char>(0x80 | ((xch >> 6) & 0x3f));
-			putf[k++] = static_cast<char>(0x80 | (xch & 0x3f));
-		}
-		else {
-			putf[k++] = static_cast<char>(0xE0 | (uch >> 12));
-			putf[k++] = static_cast<char>(0x80 | ((uch >> 6) & 0x3f));
-			putf[k++] = static_cast<char>(0x80 | (uch & 0x3f));
-		}
-		i++;
-	}
-	putf[len] = '\0';
-}
-
-static size_t UTF16FromUTF8(const char *s, size_t len, wchar_t *tbuf, size_t tlen) {
-	size_t ui = 0;
-	const unsigned char *us = reinterpret_cast<const unsigned char *>(s);
-	size_t i = 0;
-	while ((i<len) && (ui<tlen)) {
-		unsigned char ch = us[i++];
-		if (ch < 0x80) {
-			tbuf[ui] = ch;
-		}
-		else if (ch < 0x80 + 0x40 + 0x20) {
-			tbuf[ui] = static_cast<wchar_t>((ch & 0x1F) << 6);
-			ch = us[i++];
-			tbuf[ui] = static_cast<wchar_t>(tbuf[ui] + (ch & 0x7F));
-		}
-		else if (ch < 0x80 + 0x40 + 0x20 + 0x10) {
-			tbuf[ui] = static_cast<wchar_t>((ch & 0xF) << 12);
-			ch = us[i++];
-			tbuf[ui] = static_cast<wchar_t>(tbuf[ui] + ((ch & 0x7F) << 6));
-			ch = us[i++];
-			tbuf[ui] = static_cast<wchar_t>(tbuf[ui] + (ch & 0x7F));
-		}
-		else {
-			// Outside the BMP so need two surrogates
-			int val = (ch & 0x7) << 18;
-			ch = us[i++];
-			val += (ch & 0x3F) << 12;
-			ch = us[i++];
-			val += (ch & 0x3F) << 6;
-			ch = us[i++];
-			val += (ch & 0x3F);
-			tbuf[ui] = static_cast<wchar_t>(((val - 0x10000) >> 10) + SURROGATE_LEAD_FIRST);
-			ui++;
-			tbuf[ui] = static_cast<wchar_t>((val & 0x3ff) + SURROGATE_TRAIL_FIRST);
-		}
-		ui++;
-	}
-	return ui;
-}
-
-std::string UTF8FromString(const std::wstring &s) {
-	size_t sLen = s.size();
-	size_t narrowLen = UTF8Length(s.c_str(), sLen);
-	std::vector<char> vc(narrowLen + 1);
-	UTF8FromUTF16(s.c_str(), sLen, &vc[0], narrowLen);
-	return std::string(&vc[0], narrowLen);
-}
-
-std::wstring StringFromUTF8(const std::string &s) {
-	size_t sLen = s.length();
-	size_t wideLen = UTF16Length(s.c_str(), static_cast<int>(sLen));
-	std::vector<wchar_t> vgc(wideLen + 1);
-	size_t outLen = UTF16FromUTF8(s.c_str(), sLen, &vgc[0], wideLen);
-	vgc[outLen] = 0;
-	return std::wstring(&vgc[0], outLen);
-}
 
 FuncItem funcItem[] = {
 	{ TEXT("Edit Settings..."), editSettings, 0, false, nullptr },
@@ -179,7 +42,7 @@ FuncItem funcItem[] = {
 	{ TEXT("About..."), showAbout, 0, false, nullptr }
 };
 
-static HWND getCurrentScintilla() {
+static HWND GetCurrentScintilla() {
 	int id;
 	SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&id);
 	if (id == 0) return nppData._scintillaMainHandle;
@@ -196,6 +59,34 @@ static std::string DetermineLanguageFromFileName(const std::string &fileName) {
 	}
 
 	return std::string("");
+}
+
+static void SetLexer(const ScintillaGateway &editor, const std::string &language) {
+	if (language.empty())
+		return;
+
+	std::wstring ws = StringFromUTF8(language);
+	ws += L" (lpeg)";
+
+	SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
+
+	wchar_t config_dir[MAX_PATH] = { 0 };
+	SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
+	wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++");
+
+	editor.SetLexerLanguage("lpeg");
+	editor.SetProperty("lexer.lpeg.home", UTF8FromString(config_dir).c_str());
+	editor.SetProperty("lexer.lpeg.color.theme", config.theme.c_str());
+	editor.SetProperty("fold", "1");
+
+	editor.PrivateLexerCall(SCI_GETDIRECTFUNCTION, editor.GetDirectFunction());
+	editor.PrivateLexerCall(SCI_SETDOCPOINTER, editor.GetDirectPointer());
+	editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<int>(language.c_str()));
+
+	// Always show the folding margin. Since N++ doesn't recognize the file it won't have the margin showing.
+	editor.SetMarginWidthN(2, 14);
+
+	editor.Colourise(0, -1);
 }
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  reasonForCall, LPVOID lpReserved) {
@@ -258,37 +149,13 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 		case NPPN_BUFFERACTIVATED: {
 			if (!isReady) break;
 
-			ScintillaGateway editor(getCurrentScintilla());
+			ScintillaGateway editor(GetCurrentScintilla());
 
 			if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
 				wchar_t ext[MAX_PATH] = { 0 };
 				SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
 
-				auto language = DetermineLanguageFromFileName(UTF8FromString(ext).c_str());
-				if (!language.empty()) {
-					std::wstring ws(StringFromUTF8(language));
-					ws += L" (lpeg)";
-
-					SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
-
-					wchar_t config_dir[MAX_PATH] = { 0 };
-					SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
-					wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++");
-
-					editor.SetLexerLanguage("lpeg");
-					editor.SetProperty("lexer.lpeg.home", UTF8FromString(config_dir).c_str());
-					editor.SetProperty("lexer.lpeg.color.theme", config.theme.c_str());
-					editor.SetProperty("fold", "1");
-
-					editor.PrivateLexerCall(SCI_GETDIRECTFUNCTION, editor.GetDirectFunction());
-					editor.PrivateLexerCall(SCI_SETDOCPOINTER, editor.GetDirectPointer());
-					editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<int>(language.c_str()));
-
-					// Always show the folding margin. Since N++ doesn't recognize the file it won't have the margin showing.
-					editor.SetMarginWidthN(2, 14);
-
-					editor.Colourise(0, -1);
-				}
+				SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
 			}
 			break;
 		}
