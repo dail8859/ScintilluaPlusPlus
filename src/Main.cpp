@@ -128,6 +128,29 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 		return;
 
 	switch (notify->nmhdr.code) {
+#if _DEBUG
+		case SCN_UPDATEUI:
+			if (notify->updated & SC_UPDATE_SELECTION) {
+				ScintillaGateway editor(GetCurrentScintilla());
+
+				char buffer[256];
+				editor.GetLexerLanguage(buffer);
+				if (strcmp(buffer, "lpeg") == 0) {
+					std::string text;
+
+					editor.Call(SCI_PRIVATELEXERCALL, SCI_GETLEXERLANGUAGE, buffer);
+					text = buffer;
+					text += " (lpeg): ";
+					editor.Call(SCI_PRIVATELEXERCALL, editor.GetStyleAt(editor.GetCurrentPos()), buffer);
+					text += buffer;
+					text += ' ';
+					text += std::to_string(editor.GetStyleAt(editor.GetCurrentPos()));
+
+					SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(StringFromUTF8(text).c_str()));
+				}
+			}
+			break;
+#endif
 		case NPPN_READY: {
 			isReady = true;
 			ConfigLoad(&nppData, &config);
