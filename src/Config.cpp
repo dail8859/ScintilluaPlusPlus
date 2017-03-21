@@ -33,6 +33,8 @@ void ConfigLoad(const NppData *nppData, Configuration *config) {
 
 	if (file == nullptr) return;
 
+	config->file_extensions.clear();
+
 	char line[512];
 	while (true) {
 		if (fgets(line, 512, file) == NULL) break;
