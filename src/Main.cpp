@@ -65,16 +65,17 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 	if (language.empty())
 		return;
 
-	std::wstring ws = StringFromUTF8(language);
-	ws += L" (lpeg)";
-
-	SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
-
 	wchar_t config_dir[MAX_PATH] = { 0 };
 	SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
 	wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++");
 
 	editor.SetLexerLanguage("lpeg");
+
+	if (editor.GetLexer() == 1 /*SCLEX_NULL*/) {
+		MessageBox(NULL, L"Failed to set LPeg lexer", NPP_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+		return;
+	}
+
 	editor.SetProperty("lexer.lpeg.home", UTF8FromString(config_dir).c_str());
 	editor.SetProperty("lexer.lpeg.color.theme", config.theme.c_str());
 	editor.SetProperty("fold", "1");
@@ -87,6 +88,10 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 	editor.SetMarginWidthN(2, 14);
 
 	editor.Colourise(0, -1);
+
+	std::wstring ws = StringFromUTF8(language);
+	ws += L" (lpeg)";
+	SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
 }
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  reasonForCall, LPVOID lpReserved) {
