@@ -20,6 +20,15 @@
 
 #include "Scintilla.h"
 
+typedef struct {
+	unsigned char ch;
+	unsigned char style;
+} Cell;
+
+typedef int Colour;
+typedef int Position;
+typedef int KeyModifier;
+
 class ScintillaGateway final {
 private:
 	HWND scintilla = nullptr;
@@ -55,11 +64,11 @@ public:
 		Call(SCI_ADDTEXT, length, text);
 	}
 
-	void AddStyledText(int length, const char* c) const {
+	void AddStyledText(int length, const Cell* c) const {
 		Call(SCI_ADDSTYLEDTEXT, length, c);
 	}
 
-	void InsertText(int pos, const char* text) const {
+	void InsertText(Position pos, const char* text) const {
 		Call(SCI_INSERTTEXT, pos, text);
 	}
 
@@ -71,7 +80,7 @@ public:
 		Call(SCI_CLEARALL, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	void DeleteRange(int pos, int deleteLength) const {
+	void DeleteRange(Position pos, int deleteLength) const {
 		Call(SCI_DELETERANGE, pos, deleteLength);
 	}
 
@@ -80,28 +89,28 @@ public:
 	}
 
 	int GetLength() const {
-		int res = Call(SCI_GETLENGTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLENGTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetCharAt(int pos) const {
-		int res = Call(SCI_GETCHARAT, pos, SCI_UNUSED);
-		return res;
+	int GetCharAt(Position pos) const {
+		sptr_t res = Call(SCI_GETCHARAT, pos, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetCurrentPos() const {
-		int res = Call(SCI_GETCURRENTPOS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetCurrentPos() const {
+		sptr_t res = Call(SCI_GETCURRENTPOS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int GetAnchor() const {
-		int res = Call(SCI_GETANCHOR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetAnchor() const {
+		sptr_t res = Call(SCI_GETANCHOR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int GetStyleAt(int pos) const {
-		int res = Call(SCI_GETSTYLEAT, pos, SCI_UNUSED);
-		return res;
+	int GetStyleAt(Position pos) const {
+		sptr_t res = Call(SCI_GETSTYLEAT, pos, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void Redo() const {
@@ -121,18 +130,18 @@ public:
 	}
 
 	int GetStyledText(Sci_TextRange* tr) const {
-		int res = Call(SCI_GETSTYLEDTEXT, SCI_UNUSED, tr);
-		return res;
+		sptr_t res = Call(SCI_GETSTYLEDTEXT, SCI_UNUSED, tr);
+		return static_cast<int>(res);
 	}
 
 	bool CanRedo() const {
-		int res = Call(SCI_CANREDO, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_CANREDO, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int MarkerLineFromHandle(int handle) const {
-		int res = Call(SCI_MARKERLINEFROMHANDLE, handle, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_MARKERLINEFROMHANDLE, handle, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void MarkerDeleteHandle(int handle) const {
@@ -140,49 +149,49 @@ public:
 	}
 
 	bool GetUndoCollection() const {
-		int res = Call(SCI_GETUNDOCOLLECTION, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETUNDOCOLLECTION, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int GetViewWS() const {
-		int res = Call(SCI_GETVIEWWS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETVIEWWS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetViewWS(int viewWS) const {
 		Call(SCI_SETVIEWWS, viewWS, SCI_UNUSED);
 	}
 
-	int PositionFromPoint(int x, int y) const {
-		int res = Call(SCI_POSITIONFROMPOINT, x, y);
-		return res;
+	Position PositionFromPoint(int x, int y) const {
+		sptr_t res = Call(SCI_POSITIONFROMPOINT, x, y);
+		return static_cast<Position>(res);
 	}
 
-	int PositionFromPointClose(int x, int y) const {
-		int res = Call(SCI_POSITIONFROMPOINTCLOSE, x, y);
-		return res;
+	Position PositionFromPointClose(int x, int y) const {
+		sptr_t res = Call(SCI_POSITIONFROMPOINTCLOSE, x, y);
+		return static_cast<Position>(res);
 	}
 
 	void GotoLine(int line) const {
 		Call(SCI_GOTOLINE, line, SCI_UNUSED);
 	}
 
-	void GotoPos(int pos) const {
+	void GotoPos(Position pos) const {
 		Call(SCI_GOTOPOS, pos, SCI_UNUSED);
 	}
 
-	void SetAnchor(int posAnchor) const {
+	void SetAnchor(Position posAnchor) const {
 		Call(SCI_SETANCHOR, posAnchor, SCI_UNUSED);
 	}
 
 	int GetCurLine(int length, char* text) const {
-		int res = Call(SCI_GETCURLINE, length, text);
-		return res;
+		sptr_t res = Call(SCI_GETCURLINE, length, text);
+		return static_cast<int>(res);
 	}
 
-	int GetEndStyled() const {
-		int res = Call(SCI_GETENDSTYLED, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetEndStyled() const {
+		sptr_t res = Call(SCI_GETENDSTYLED, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void ConvertEOLs(int eolMode) const {
@@ -190,15 +199,15 @@ public:
 	}
 
 	int GetEOLMode() const {
-		int res = Call(SCI_GETEOLMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETEOLMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetEOLMode(int eolMode) const {
 		Call(SCI_SETEOLMODE, eolMode, SCI_UNUSED);
 	}
 
-	void StartStyling(int pos, int mask) const {
+	void StartStyling(Position pos, int mask) const {
 		Call(SCI_STARTSTYLING, pos, mask);
 	}
 
@@ -207,7 +216,7 @@ public:
 	}
 
 	bool GetBufferedDraw() const {
-		int res = Call(SCI_GETBUFFEREDDRAW, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETBUFFEREDDRAW, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -220,8 +229,8 @@ public:
 	}
 
 	int GetTabWidth() const {
-		int res = Call(SCI_GETTABWIDTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETTABWIDTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void ClearTabStops(int line) const {
@@ -233,8 +242,8 @@ public:
 	}
 
 	int GetNextTabStop(int line, int x) const {
-		int res = Call(SCI_GETNEXTTABSTOP, line, x);
-		return res;
+		sptr_t res = Call(SCI_GETNEXTTABSTOP, line, x);
+		return static_cast<int>(res);
 	}
 
 	void SetCodePage(int codePage) const {
@@ -242,8 +251,8 @@ public:
 	}
 
 	int GetIMEInteraction() const {
-		int res = Call(SCI_GETIMEINTERACTION, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETIMEINTERACTION, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetIMEInteraction(int imeInteraction) const {
@@ -254,15 +263,15 @@ public:
 		Call(SCI_MARKERDEFINE, markerNumber, markerSymbol);
 	}
 
-	void MarkerSetFore(int markerNumber, int fore) const {
+	void MarkerSetFore(int markerNumber, Colour fore) const {
 		Call(SCI_MARKERSETFORE, markerNumber, fore);
 	}
 
-	void MarkerSetBack(int markerNumber, int back) const {
+	void MarkerSetBack(int markerNumber, Colour back) const {
 		Call(SCI_MARKERSETBACK, markerNumber, back);
 	}
 
-	void MarkerSetBackSelected(int markerNumber, int back) const {
+	void MarkerSetBackSelected(int markerNumber, Colour back) const {
 		Call(SCI_MARKERSETBACKSELECTED, markerNumber, back);
 	}
 
@@ -271,8 +280,8 @@ public:
 	}
 
 	int MarkerAdd(int line, int markerNumber) const {
-		int res = Call(SCI_MARKERADD, line, markerNumber);
-		return res;
+		sptr_t res = Call(SCI_MARKERADD, line, markerNumber);
+		return static_cast<int>(res);
 	}
 
 	void MarkerDelete(int line, int markerNumber) const {
@@ -284,18 +293,18 @@ public:
 	}
 
 	int MarkerGet(int line) const {
-		int res = Call(SCI_MARKERGET, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_MARKERGET, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int MarkerNext(int lineStart, int markerMask) const {
-		int res = Call(SCI_MARKERNEXT, lineStart, markerMask);
-		return res;
+		sptr_t res = Call(SCI_MARKERNEXT, lineStart, markerMask);
+		return static_cast<int>(res);
 	}
 
 	int MarkerPrevious(int lineStart, int markerMask) const {
-		int res = Call(SCI_MARKERPREVIOUS, lineStart, markerMask);
-		return res;
+		sptr_t res = Call(SCI_MARKERPREVIOUS, lineStart, markerMask);
+		return static_cast<int>(res);
 	}
 
 	void MarkerDefinePixmap(int markerNumber, const char* pixmap) const {
@@ -315,8 +324,8 @@ public:
 	}
 
 	int GetMarginTypeN(int margin) const {
-		int res = Call(SCI_GETMARGINTYPEN, margin, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINTYPEN, margin, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginWidthN(int margin, int pixelWidth) const {
@@ -324,8 +333,8 @@ public:
 	}
 
 	int GetMarginWidthN(int margin) const {
-		int res = Call(SCI_GETMARGINWIDTHN, margin, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINWIDTHN, margin, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginMaskN(int margin, int mask) const {
@@ -333,8 +342,8 @@ public:
 	}
 
 	int GetMarginMaskN(int margin) const {
-		int res = Call(SCI_GETMARGINMASKN, margin, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINMASKN, margin, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginSensitiveN(int margin, bool sensitive) const {
@@ -342,7 +351,7 @@ public:
 	}
 
 	bool GetMarginSensitiveN(int margin) const {
-		int res = Call(SCI_GETMARGINSENSITIVEN, margin, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETMARGINSENSITIVEN, margin, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -351,19 +360,19 @@ public:
 	}
 
 	int GetMarginCursorN(int margin) const {
-		int res = Call(SCI_GETMARGINCURSORN, margin, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINCURSORN, margin, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void StyleClearAll() const {
 		Call(SCI_STYLECLEARALL, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	void StyleSetFore(int style, int fore) const {
+	void StyleSetFore(int style, Colour fore) const {
 		Call(SCI_STYLESETFORE, style, fore);
 	}
 
-	void StyleSetBack(int style, int back) const {
+	void StyleSetBack(int style, Colour back) const {
 		Call(SCI_STYLESETBACK, style, back);
 	}
 
@@ -395,68 +404,68 @@ public:
 		Call(SCI_STYLESETUNDERLINE, style, underline);
 	}
 
-	int StyleGetFore(int style) const {
-		int res = Call(SCI_STYLEGETFORE, style, SCI_UNUSED);
-		return res;
+	Colour StyleGetFore(int style) const {
+		sptr_t res = Call(SCI_STYLEGETFORE, style, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
-	int StyleGetBack(int style) const {
-		int res = Call(SCI_STYLEGETBACK, style, SCI_UNUSED);
-		return res;
+	Colour StyleGetBack(int style) const {
+		sptr_t res = Call(SCI_STYLEGETBACK, style, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	bool StyleGetBold(int style) const {
-		int res = Call(SCI_STYLEGETBOLD, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETBOLD, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool StyleGetItalic(int style) const {
-		int res = Call(SCI_STYLEGETITALIC, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETITALIC, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int StyleGetSize(int style) const {
-		int res = Call(SCI_STYLEGETSIZE, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETSIZE, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int StyleGetFont(int style, char* fontName) const {
-		int res = Call(SCI_STYLEGETFONT, style, fontName);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETFONT, style, fontName);
+		return static_cast<int>(res);
 	}
 
 	bool StyleGetEOLFilled(int style) const {
-		int res = Call(SCI_STYLEGETEOLFILLED, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETEOLFILLED, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool StyleGetUnderline(int style) const {
-		int res = Call(SCI_STYLEGETUNDERLINE, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETUNDERLINE, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int StyleGetCase(int style) const {
-		int res = Call(SCI_STYLEGETCASE, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETCASE, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int StyleGetCharacterSet(int style) const {
-		int res = Call(SCI_STYLEGETCHARACTERSET, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETCHARACTERSET, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	bool StyleGetVisible(int style) const {
-		int res = Call(SCI_STYLEGETVISIBLE, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETVISIBLE, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool StyleGetChangeable(int style) const {
-		int res = Call(SCI_STYLEGETCHANGEABLE, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETCHANGEABLE, style, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool StyleGetHotSpot(int style) const {
-		int res = Call(SCI_STYLEGETHOTSPOT, style, SCI_UNUSED);
+		sptr_t res = Call(SCI_STYLEGETHOTSPOT, style, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -469,8 +478,8 @@ public:
 	}
 
 	int StyleGetSizeFractional(int style) const {
-		int res = Call(SCI_STYLEGETSIZEFRACTIONAL, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETSIZEFRACTIONAL, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void StyleSetWeight(int style, int weight) const {
@@ -478,8 +487,8 @@ public:
 	}
 
 	int StyleGetWeight(int style) const {
-		int res = Call(SCI_STYLEGETWEIGHT, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_STYLEGETWEIGHT, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void StyleSetCharacterSet(int style, int characterSet) const {
@@ -490,17 +499,17 @@ public:
 		Call(SCI_STYLESETHOTSPOT, style, hotspot);
 	}
 
-	void SetSelFore(bool useSetting, int fore) const {
+	void SetSelFore(bool useSetting, Colour fore) const {
 		Call(SCI_SETSELFORE, useSetting, fore);
 	}
 
-	void SetSelBack(bool useSetting, int back) const {
+	void SetSelBack(bool useSetting, Colour back) const {
 		Call(SCI_SETSELBACK, useSetting, back);
 	}
 
 	int GetSelAlpha() const {
-		int res = Call(SCI_GETSELALPHA, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSELALPHA, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetSelAlpha(int alpha) const {
@@ -508,7 +517,7 @@ public:
 	}
 
 	bool GetSelEOLFilled() const {
-		int res = Call(SCI_GETSELEOLFILLED, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETSELEOLFILLED, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -516,15 +525,15 @@ public:
 		Call(SCI_SETSELEOLFILLED, filled, SCI_UNUSED);
 	}
 
-	void SetCaretFore(int fore) const {
+	void SetCaretFore(Colour fore) const {
 		Call(SCI_SETCARETFORE, fore, SCI_UNUSED);
 	}
 
-	void AssignCmdKey(int km, int msg) const {
+	void AssignCmdKey(KeyModifier km, int msg) const {
 		Call(SCI_ASSIGNCMDKEY, km, msg);
 	}
 
-	void ClearCmdKey(int km) const {
+	void ClearCmdKey(KeyModifier km) const {
 		Call(SCI_CLEARCMDKEY, km, SCI_UNUSED);
 	}
 
@@ -541,8 +550,8 @@ public:
 	}
 
 	int GetCaretPeriod() const {
-		int res = Call(SCI_GETCARETPERIOD, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCARETPERIOD, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetCaretPeriod(int periodMilliseconds) const {
@@ -554,8 +563,8 @@ public:
 	}
 
 	int GetWordChars(char* characters) const {
-		int res = Call(SCI_GETWORDCHARS, SCI_UNUSED, characters);
-		return res;
+		sptr_t res = Call(SCI_GETWORDCHARS, SCI_UNUSED, characters);
+		return static_cast<int>(res);
 	}
 
 	void BeginUndoAction() const {
@@ -571,17 +580,17 @@ public:
 	}
 
 	int IndicGetStyle(int indic) const {
-		int res = Call(SCI_INDICGETSTYLE, indic, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICGETSTYLE, indic, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void IndicSetFore(int indic, int fore) const {
+	void IndicSetFore(int indic, Colour fore) const {
 		Call(SCI_INDICSETFORE, indic, fore);
 	}
 
-	int IndicGetFore(int indic) const {
-		int res = Call(SCI_INDICGETFORE, indic, SCI_UNUSED);
-		return res;
+	Colour IndicGetFore(int indic) const {
+		sptr_t res = Call(SCI_INDICGETFORE, indic, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	void IndicSetUnder(int indic, bool under) const {
@@ -589,7 +598,7 @@ public:
 	}
 
 	bool IndicGetUnder(int indic) const {
-		int res = Call(SCI_INDICGETUNDER, indic, SCI_UNUSED);
+		sptr_t res = Call(SCI_INDICGETUNDER, indic, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -598,17 +607,17 @@ public:
 	}
 
 	int IndicGetHoverStyle(int indic) const {
-		int res = Call(SCI_INDICGETHOVERSTYLE, indic, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICGETHOVERSTYLE, indic, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void IndicSetHoverFore(int indic, int fore) const {
+	void IndicSetHoverFore(int indic, Colour fore) const {
 		Call(SCI_INDICSETHOVERFORE, indic, fore);
 	}
 
-	int IndicGetHoverFore(int indic) const {
-		int res = Call(SCI_INDICGETHOVERFORE, indic, SCI_UNUSED);
-		return res;
+	Colour IndicGetHoverFore(int indic) const {
+		sptr_t res = Call(SCI_INDICGETHOVERFORE, indic, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	void IndicSetFlags(int indic, int flags) const {
@@ -616,15 +625,15 @@ public:
 	}
 
 	int IndicGetFlags(int indic) const {
-		int res = Call(SCI_INDICGETFLAGS, indic, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICGETFLAGS, indic, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetWhitespaceFore(bool useSetting, int fore) const {
+	void SetWhitespaceFore(bool useSetting, Colour fore) const {
 		Call(SCI_SETWHITESPACEFORE, useSetting, fore);
 	}
 
-	void SetWhitespaceBack(bool useSetting, int back) const {
+	void SetWhitespaceBack(bool useSetting, Colour back) const {
 		Call(SCI_SETWHITESPACEBACK, useSetting, back);
 	}
 
@@ -633,8 +642,8 @@ public:
 	}
 
 	int GetWhitespaceSize() const {
-		int res = Call(SCI_GETWHITESPACESIZE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWHITESPACESIZE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetStyleBits(int bits) const {
@@ -642,8 +651,8 @@ public:
 	}
 
 	int GetStyleBits() const {
-		int res = Call(SCI_GETSTYLEBITS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSTYLEBITS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetLineState(int line, int state) const {
@@ -651,17 +660,17 @@ public:
 	}
 
 	int GetLineState(int line) const {
-		int res = Call(SCI_GETLINESTATE, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINESTATE, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetMaxLineState() const {
-		int res = Call(SCI_GETMAXLINESTATE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMAXLINESTATE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	bool GetCaretLineVisible() const {
-		int res = Call(SCI_GETCARETLINEVISIBLE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETCARETLINEVISIBLE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -669,12 +678,12 @@ public:
 		Call(SCI_SETCARETLINEVISIBLE, show, SCI_UNUSED);
 	}
 
-	int GetCaretLineBack() const {
-		int res = Call(SCI_GETCARETLINEBACK, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetCaretLineBack() const {
+		sptr_t res = Call(SCI_GETCARETLINEBACK, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
-	void SetCaretLineBack(int back) const {
+	void SetCaretLineBack(Colour back) const {
 		Call(SCI_SETCARETLINEBACK, back, SCI_UNUSED);
 	}
 
@@ -691,13 +700,13 @@ public:
 	}
 
 	bool AutoCActive() const {
-		int res = Call(SCI_AUTOCACTIVE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCACTIVE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
-	int AutoCPosStart() const {
-		int res = Call(SCI_AUTOCPOSSTART, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position AutoCPosStart() const {
+		sptr_t res = Call(SCI_AUTOCPOSSTART, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void AutoCComplete() const {
@@ -713,8 +722,8 @@ public:
 	}
 
 	int AutoCGetSeparator() const {
-		int res = Call(SCI_AUTOCGETSEPARATOR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETSEPARATOR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSelect(const char* text) const {
@@ -726,7 +735,7 @@ public:
 	}
 
 	bool AutoCGetCancelAtStart() const {
-		int res = Call(SCI_AUTOCGETCANCELATSTART, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCGETCANCELATSTART, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -739,7 +748,7 @@ public:
 	}
 
 	bool AutoCGetChooseSingle() const {
-		int res = Call(SCI_AUTOCGETCHOOSESINGLE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCGETCHOOSESINGLE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -748,7 +757,7 @@ public:
 	}
 
 	bool AutoCGetIgnoreCase() const {
-		int res = Call(SCI_AUTOCGETIGNORECASE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCGETIGNORECASE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -761,7 +770,7 @@ public:
 	}
 
 	bool AutoCGetAutoHide() const {
-		int res = Call(SCI_AUTOCGETAUTOHIDE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCGETAUTOHIDE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -770,7 +779,7 @@ public:
 	}
 
 	bool AutoCGetDropRestOfWord() const {
-		int res = Call(SCI_AUTOCGETDROPRESTOFWORD, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_AUTOCGETDROPRESTOFWORD, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -783,8 +792,8 @@ public:
 	}
 
 	int AutoCGetTypeSeparator() const {
-		int res = Call(SCI_AUTOCGETTYPESEPARATOR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETTYPESEPARATOR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSetTypeSeparator(int separatorCharacter) const {
@@ -796,8 +805,8 @@ public:
 	}
 
 	int AutoCGetMaxWidth() const {
-		int res = Call(SCI_AUTOCGETMAXWIDTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETMAXWIDTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSetMaxHeight(int rowCount) const {
@@ -805,8 +814,8 @@ public:
 	}
 
 	int AutoCGetMaxHeight() const {
-		int res = Call(SCI_AUTOCGETMAXHEIGHT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETMAXHEIGHT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetIndent(int indentSize) const {
@@ -814,8 +823,8 @@ public:
 	}
 
 	int GetIndent() const {
-		int res = Call(SCI_GETINDENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETINDENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetUseTabs(bool useTabs) const {
@@ -823,7 +832,7 @@ public:
 	}
 
 	bool GetUseTabs() const {
-		int res = Call(SCI_GETUSETABS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETUSETABS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -832,23 +841,23 @@ public:
 	}
 
 	int GetLineIndentation(int line) const {
-		int res = Call(SCI_GETLINEINDENTATION, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINEINDENTATION, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetLineIndentPosition(int line) const {
-		int res = Call(SCI_GETLINEINDENTPOSITION, line, SCI_UNUSED);
-		return res;
+	Position GetLineIndentPosition(int line) const {
+		sptr_t res = Call(SCI_GETLINEINDENTPOSITION, line, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int GetColumn(int pos) const {
-		int res = Call(SCI_GETCOLUMN, pos, SCI_UNUSED);
-		return res;
+	int GetColumn(Position pos) const {
+		sptr_t res = Call(SCI_GETCOLUMN, pos, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int CountCharacters(int startPos, int endPos) const {
-		int res = Call(SCI_COUNTCHARACTERS, startPos, endPos);
-		return res;
+		sptr_t res = Call(SCI_COUNTCHARACTERS, startPos, endPos);
+		return static_cast<int>(res);
 	}
 
 	void SetHScrollBar(bool show) const {
@@ -856,7 +865,7 @@ public:
 	}
 
 	bool GetHScrollBar() const {
-		int res = Call(SCI_GETHSCROLLBAR, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETHSCROLLBAR, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -865,8 +874,8 @@ public:
 	}
 
 	int GetIndentationGuides() const {
-		int res = Call(SCI_GETINDENTATIONGUIDES, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETINDENTATIONGUIDES, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetHighlightGuide(int column) const {
@@ -874,53 +883,53 @@ public:
 	}
 
 	int GetHighlightGuide() const {
-		int res = Call(SCI_GETHIGHLIGHTGUIDE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETHIGHLIGHTGUIDE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetLineEndPosition(int line) const {
-		int res = Call(SCI_GETLINEENDPOSITION, line, SCI_UNUSED);
-		return res;
+	Position GetLineEndPosition(int line) const {
+		sptr_t res = Call(SCI_GETLINEENDPOSITION, line, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	int GetCodePage() const {
-		int res = Call(SCI_GETCODEPAGE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCODEPAGE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetCaretFore() const {
-		int res = Call(SCI_GETCARETFORE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetCaretFore() const {
+		sptr_t res = Call(SCI_GETCARETFORE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	bool GetReadOnly() const {
-		int res = Call(SCI_GETREADONLY, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETREADONLY, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
-	void SetCurrentPos(int pos) const {
+	void SetCurrentPos(Position pos) const {
 		Call(SCI_SETCURRENTPOS, pos, SCI_UNUSED);
 	}
 
-	void SetSelectionStart(int pos) const {
+	void SetSelectionStart(Position pos) const {
 		Call(SCI_SETSELECTIONSTART, pos, SCI_UNUSED);
 	}
 
-	int GetSelectionStart() const {
-		int res = Call(SCI_GETSELECTIONSTART, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetSelectionStart() const {
+		sptr_t res = Call(SCI_GETSELECTIONSTART, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetSelectionEnd(int pos) const {
+	void SetSelectionEnd(Position pos) const {
 		Call(SCI_SETSELECTIONEND, pos, SCI_UNUSED);
 	}
 
-	int GetSelectionEnd() const {
-		int res = Call(SCI_GETSELECTIONEND, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetSelectionEnd() const {
+		sptr_t res = Call(SCI_GETSELECTIONEND, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetEmptySelection(int pos) const {
+	void SetEmptySelection(Position pos) const {
 		Call(SCI_SETEMPTYSELECTION, pos, SCI_UNUSED);
 	}
 
@@ -929,8 +938,8 @@ public:
 	}
 
 	int GetPrintMagnification() const {
-		int res = Call(SCI_GETPRINTMAGNIFICATION, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPRINTMAGNIFICATION, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetPrintColourMode(int mode) const {
@@ -938,33 +947,33 @@ public:
 	}
 
 	int GetPrintColourMode() const {
-		int res = Call(SCI_GETPRINTCOLOURMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPRINTCOLOURMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int FindText(int flags, Sci_TextToFind* ft) const {
-		int res = Call(SCI_FINDTEXT, flags, ft);
-		return res;
+	Position FindText(int flags, Sci_TextToFind* ft) const {
+		sptr_t res = Call(SCI_FINDTEXT, flags, ft);
+		return static_cast<Position>(res);
 	}
 
-	int FormatRange(bool draw, Sci_RangeToFormat* fr) const {
-		int res = Call(SCI_FORMATRANGE, draw, fr);
-		return res;
+	Position FormatRange(bool draw, Sci_RangeToFormat* fr) const {
+		sptr_t res = Call(SCI_FORMATRANGE, draw, fr);
+		return static_cast<Position>(res);
 	}
 
 	int GetFirstVisibleLine() const {
-		int res = Call(SCI_GETFIRSTVISIBLELINE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETFIRSTVISIBLELINE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetLine(int line, char* text) const {
-		int res = Call(SCI_GETLINE, line, text);
-		return res;
+		sptr_t res = Call(SCI_GETLINE, line, text);
+		return static_cast<int>(res);
 	}
 
 	int GetLineCount() const {
-		int res = Call(SCI_GETLINECOUNT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINECOUNT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginLeft(int pixelWidth) const {
@@ -972,8 +981,8 @@ public:
 	}
 
 	int GetMarginLeft() const {
-		int res = Call(SCI_GETMARGINLEFT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINLEFT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginRight(int pixelWidth) const {
@@ -981,51 +990,51 @@ public:
 	}
 
 	int GetMarginRight() const {
-		int res = Call(SCI_GETMARGINRIGHT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINRIGHT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	bool GetModify() const {
-		int res = Call(SCI_GETMODIFY, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETMODIFY, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
-	void SetSel(int start, int end) const {
+	void SetSel(Position start, Position end) const {
 		Call(SCI_SETSEL, start, end);
 	}
 
 	int GetSelText(char* text) const {
-		int res = Call(SCI_GETSELTEXT, SCI_UNUSED, text);
-		return res;
+		sptr_t res = Call(SCI_GETSELTEXT, SCI_UNUSED, text);
+		return static_cast<int>(res);
 	}
 
 	int GetTextRange(Sci_TextRange* tr) const {
-		int res = Call(SCI_GETTEXTRANGE, SCI_UNUSED, tr);
-		return res;
+		sptr_t res = Call(SCI_GETTEXTRANGE, SCI_UNUSED, tr);
+		return static_cast<int>(res);
 	}
 
 	void HideSelection(bool normal) const {
 		Call(SCI_HIDESELECTION, normal, SCI_UNUSED);
 	}
 
-	int PointXFromPosition(int pos) const {
-		int res = Call(SCI_POINTXFROMPOSITION, SCI_UNUSED, pos);
-		return res;
+	int PointXFromPosition(Position pos) const {
+		sptr_t res = Call(SCI_POINTXFROMPOSITION, SCI_UNUSED, pos);
+		return static_cast<int>(res);
 	}
 
-	int PointYFromPosition(int pos) const {
-		int res = Call(SCI_POINTYFROMPOSITION, SCI_UNUSED, pos);
-		return res;
+	int PointYFromPosition(Position pos) const {
+		sptr_t res = Call(SCI_POINTYFROMPOSITION, SCI_UNUSED, pos);
+		return static_cast<int>(res);
 	}
 
-	int LineFromPosition(int pos) const {
-		int res = Call(SCI_LINEFROMPOSITION, pos, SCI_UNUSED);
-		return res;
+	int LineFromPosition(Position pos) const {
+		sptr_t res = Call(SCI_LINEFROMPOSITION, pos, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int PositionFromLine(int line) const {
-		int res = Call(SCI_POSITIONFROMLINE, line, SCI_UNUSED);
-		return res;
+	Position PositionFromLine(int line) const {
+		sptr_t res = Call(SCI_POSITIONFROMLINE, line, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void LineScroll(int columns, int lines) const {
@@ -1036,7 +1045,7 @@ public:
 		Call(SCI_SCROLLCARET, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	void ScrollRange(int secondary, int primary) const {
+	void ScrollRange(Position secondary, Position primary) const {
 		Call(SCI_SCROLLRANGE, secondary, primary);
 	}
 
@@ -1053,12 +1062,12 @@ public:
 	}
 
 	bool CanPaste() const {
-		int res = Call(SCI_CANPASTE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_CANPASTE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool CanUndo() const {
-		int res = Call(SCI_CANUNDO, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_CANUNDO, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1091,13 +1100,13 @@ public:
 	}
 
 	int GetText(int length, char* text) const {
-		int res = Call(SCI_GETTEXT, length, text);
-		return res;
+		sptr_t res = Call(SCI_GETTEXT, length, text);
+		return static_cast<int>(res);
 	}
 
 	int GetTextLength() const {
-		int res = Call(SCI_GETTEXTLENGTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETTEXTLENGTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	sptr_t GetDirectFunction() const {
@@ -1115,7 +1124,7 @@ public:
 	}
 
 	bool GetOvertype() const {
-		int res = Call(SCI_GETOVERTYPE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETOVERTYPE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1124,50 +1133,50 @@ public:
 	}
 
 	int GetCaretWidth() const {
-		int res = Call(SCI_GETCARETWIDTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCARETWIDTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetTargetStart(int pos) const {
+	void SetTargetStart(Position pos) const {
 		Call(SCI_SETTARGETSTART, pos, SCI_UNUSED);
 	}
 
-	int GetTargetStart() const {
-		int res = Call(SCI_GETTARGETSTART, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetTargetStart() const {
+		sptr_t res = Call(SCI_GETTARGETSTART, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetTargetEnd(int pos) const {
+	void SetTargetEnd(Position pos) const {
 		Call(SCI_SETTARGETEND, pos, SCI_UNUSED);
 	}
 
-	int GetTargetEnd() const {
-		int res = Call(SCI_GETTARGETEND, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetTargetEnd() const {
+		sptr_t res = Call(SCI_GETTARGETEND, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetTargetRange(int start, int end) const {
+	void SetTargetRange(Position start, Position end) const {
 		Call(SCI_SETTARGETRANGE, start, end);
 	}
 
 	int GetTargetText(char* characters) const {
-		int res = Call(SCI_GETTARGETTEXT, SCI_UNUSED, characters);
-		return res;
+		sptr_t res = Call(SCI_GETTARGETTEXT, SCI_UNUSED, characters);
+		return static_cast<int>(res);
 	}
 
 	int ReplaceTarget(int length, const char* text) const {
-		int res = Call(SCI_REPLACETARGET, length, text);
-		return res;
+		sptr_t res = Call(SCI_REPLACETARGET, length, text);
+		return static_cast<int>(res);
 	}
 
 	int ReplaceTargetRE(int length, const char* text) const {
-		int res = Call(SCI_REPLACETARGETRE, length, text);
-		return res;
+		sptr_t res = Call(SCI_REPLACETARGETRE, length, text);
+		return static_cast<int>(res);
 	}
 
 	int SearchInTarget(int length, const char* text) const {
-		int res = Call(SCI_SEARCHINTARGET, length, text);
-		return res;
+		sptr_t res = Call(SCI_SEARCHINTARGET, length, text);
+		return static_cast<int>(res);
 	}
 
 	void SetSearchFlags(int flags) const {
@@ -1175,11 +1184,11 @@ public:
 	}
 
 	int GetSearchFlags() const {
-		int res = Call(SCI_GETSEARCHFLAGS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSEARCHFLAGS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void CallTipShow(int pos, const char* definition) const {
+	void CallTipShow(Position pos, const char* definition) const {
 		Call(SCI_CALLTIPSHOW, pos, definition);
 	}
 
@@ -1188,13 +1197,13 @@ public:
 	}
 
 	bool CallTipActive() const {
-		int res = Call(SCI_CALLTIPACTIVE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_CALLTIPACTIVE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
-	int CallTipPosStart() const {
-		int res = Call(SCI_CALLTIPPOSSTART, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position CallTipPosStart() const {
+		sptr_t res = Call(SCI_CALLTIPPOSSTART, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void CallTipSetPosStart(int posStart) const {
@@ -1205,15 +1214,15 @@ public:
 		Call(SCI_CALLTIPSETHLT, start, end);
 	}
 
-	void CallTipSetBack(int back) const {
+	void CallTipSetBack(Colour back) const {
 		Call(SCI_CALLTIPSETBACK, back, SCI_UNUSED);
 	}
 
-	void CallTipSetFore(int fore) const {
+	void CallTipSetFore(Colour fore) const {
 		Call(SCI_CALLTIPSETFORE, fore, SCI_UNUSED);
 	}
 
-	void CallTipSetForeHlt(int fore) const {
+	void CallTipSetForeHlt(Colour fore) const {
 		Call(SCI_CALLTIPSETFOREHLT, fore, SCI_UNUSED);
 	}
 
@@ -1226,18 +1235,18 @@ public:
 	}
 
 	int VisibleFromDocLine(int line) const {
-		int res = Call(SCI_VISIBLEFROMDOCLINE, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_VISIBLEFROMDOCLINE, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int DocLineFromVisible(int lineDisplay) const {
-		int res = Call(SCI_DOCLINEFROMVISIBLE, lineDisplay, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_DOCLINEFROMVISIBLE, lineDisplay, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int WrapCount(int line) const {
-		int res = Call(SCI_WRAPCOUNT, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_WRAPCOUNT, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetFoldLevel(int line, int level) const {
@@ -1245,18 +1254,18 @@ public:
 	}
 
 	int GetFoldLevel(int line) const {
-		int res = Call(SCI_GETFOLDLEVEL, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETFOLDLEVEL, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetLastChild(int line, int level) const {
-		int res = Call(SCI_GETLASTCHILD, line, level);
-		return res;
+		sptr_t res = Call(SCI_GETLASTCHILD, line, level);
+		return static_cast<int>(res);
 	}
 
 	int GetFoldParent(int line) const {
-		int res = Call(SCI_GETFOLDPARENT, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETFOLDPARENT, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void ShowLines(int lineStart, int lineEnd) const {
@@ -1268,12 +1277,12 @@ public:
 	}
 
 	bool GetLineVisible(int line) const {
-		int res = Call(SCI_GETLINEVISIBLE, line, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETLINEVISIBLE, line, SCI_UNUSED);
 		return res != 0;
 	}
 
 	bool GetAllLinesVisible() const {
-		int res = Call(SCI_GETALLLINESVISIBLE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETALLLINESVISIBLE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1282,7 +1291,7 @@ public:
 	}
 
 	bool GetFoldExpanded(int line) const {
-		int res = Call(SCI_GETFOLDEXPANDED, line, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETFOLDEXPANDED, line, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1315,8 +1324,8 @@ public:
 	}
 
 	int GetAutomaticFold() const {
-		int res = Call(SCI_GETAUTOMATICFOLD, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETAUTOMATICFOLD, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetFoldFlags(int flags) const {
@@ -1332,7 +1341,7 @@ public:
 	}
 
 	bool GetTabIndents() const {
-		int res = Call(SCI_GETTABINDENTS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETTABINDENTS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1341,7 +1350,7 @@ public:
 	}
 
 	bool GetBackSpaceUnIndents() const {
-		int res = Call(SCI_GETBACKSPACEUNINDENTS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETBACKSPACEUNINDENTS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1350,18 +1359,18 @@ public:
 	}
 
 	int GetMouseDwellTime() const {
-		int res = Call(SCI_GETMOUSEDWELLTIME, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMOUSEDWELLTIME, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int WordStartPosition(int pos, bool onlyWordCharacters) const {
-		int res = Call(SCI_WORDSTARTPOSITION, pos, onlyWordCharacters);
-		return res;
+	int WordStartPosition(Position pos, bool onlyWordCharacters) const {
+		sptr_t res = Call(SCI_WORDSTARTPOSITION, pos, onlyWordCharacters);
+		return static_cast<int>(res);
 	}
 
-	int WordEndPosition(int pos, bool onlyWordCharacters) const {
-		int res = Call(SCI_WORDENDPOSITION, pos, onlyWordCharacters);
-		return res;
+	int WordEndPosition(Position pos, bool onlyWordCharacters) const {
+		sptr_t res = Call(SCI_WORDENDPOSITION, pos, onlyWordCharacters);
+		return static_cast<int>(res);
 	}
 
 	void SetWrapMode(int mode) const {
@@ -1369,8 +1378,8 @@ public:
 	}
 
 	int GetWrapMode() const {
-		int res = Call(SCI_GETWRAPMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWRAPMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetWrapVisualFlags(int wrapVisualFlags) const {
@@ -1378,8 +1387,8 @@ public:
 	}
 
 	int GetWrapVisualFlags() const {
-		int res = Call(SCI_GETWRAPVISUALFLAGS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWRAPVISUALFLAGS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetWrapVisualFlagsLocation(int wrapVisualFlagsLocation) const {
@@ -1387,8 +1396,8 @@ public:
 	}
 
 	int GetWrapVisualFlagsLocation() const {
-		int res = Call(SCI_GETWRAPVISUALFLAGSLOCATION, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWRAPVISUALFLAGSLOCATION, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetWrapStartIndent(int indent) const {
@@ -1396,8 +1405,8 @@ public:
 	}
 
 	int GetWrapStartIndent() const {
-		int res = Call(SCI_GETWRAPSTARTINDENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWRAPSTARTINDENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetWrapIndentMode(int mode) const {
@@ -1405,8 +1414,8 @@ public:
 	}
 
 	int GetWrapIndentMode() const {
-		int res = Call(SCI_GETWRAPINDENTMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETWRAPINDENTMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetLayoutCache(int mode) const {
@@ -1414,8 +1423,8 @@ public:
 	}
 
 	int GetLayoutCache() const {
-		int res = Call(SCI_GETLAYOUTCACHE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLAYOUTCACHE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetScrollWidth(int pixelWidth) const {
@@ -1423,8 +1432,8 @@ public:
 	}
 
 	int GetScrollWidth() const {
-		int res = Call(SCI_GETSCROLLWIDTH, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSCROLLWIDTH, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetScrollWidthTracking(bool tracking) const {
@@ -1432,13 +1441,13 @@ public:
 	}
 
 	bool GetScrollWidthTracking() const {
-		int res = Call(SCI_GETSCROLLWIDTHTRACKING, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETSCROLLWIDTHTRACKING, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int TextWidth(int style, const char* text) const {
-		int res = Call(SCI_TEXTWIDTH, style, text);
-		return res;
+		sptr_t res = Call(SCI_TEXTWIDTH, style, text);
+		return static_cast<int>(res);
 	}
 
 	void SetEndAtLastLine(bool endAtLastLine) const {
@@ -1446,13 +1455,13 @@ public:
 	}
 
 	bool GetEndAtLastLine() const {
-		int res = Call(SCI_GETENDATLASTLINE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETENDATLASTLINE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int TextHeight(int line) const {
-		int res = Call(SCI_TEXTHEIGHT, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_TEXTHEIGHT, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetVScrollBar(bool show) const {
@@ -1460,7 +1469,7 @@ public:
 	}
 
 	bool GetVScrollBar() const {
-		int res = Call(SCI_GETVSCROLLBAR, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETVSCROLLBAR, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1469,7 +1478,7 @@ public:
 	}
 
 	bool GetTwoPhaseDraw() const {
-		int res = Call(SCI_GETTWOPHASEDRAW, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETTWOPHASEDRAW, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1478,8 +1487,8 @@ public:
 	}
 
 	int GetPhasesDraw() const {
-		int res = Call(SCI_GETPHASESDRAW, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPHASESDRAW, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetPhasesDraw(int phases) const {
@@ -1491,8 +1500,8 @@ public:
 	}
 
 	int GetFontQuality() const {
-		int res = Call(SCI_GETFONTQUALITY, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETFONTQUALITY, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetFirstVisibleLine(int lineDisplay) const {
@@ -1504,13 +1513,13 @@ public:
 	}
 
 	int GetMultiPaste() const {
-		int res = Call(SCI_GETMULTIPASTE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMULTIPASTE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetTag(int tagNumber, char* tagValue) const {
-		int res = Call(SCI_GETTAG, tagNumber, tagValue);
-		return res;
+		sptr_t res = Call(SCI_GETTAG, tagNumber, tagValue);
+		return static_cast<int>(res);
 	}
 
 	void TargetFromSelection() const {
@@ -1525,11 +1534,11 @@ public:
 		Call(SCI_LINESSPLIT, pixelWidth, SCI_UNUSED);
 	}
 
-	void SetFoldMarginColour(bool useSetting, int back) const {
+	void SetFoldMarginColour(bool useSetting, Colour back) const {
 		Call(SCI_SETFOLDMARGINCOLOUR, useSetting, back);
 	}
 
-	void SetFoldMarginHiColour(bool useSetting, int fore) const {
+	void SetFoldMarginHiColour(bool useSetting, Colour fore) const {
 		Call(SCI_SETFOLDMARGINHICOLOUR, useSetting, fore);
 	}
 
@@ -1770,11 +1779,11 @@ public:
 	}
 
 	int LineLength(int line) const {
-		int res = Call(SCI_LINELENGTH, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_LINELENGTH, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void BraceHighlight(int pos1, int pos2) const {
+	void BraceHighlight(Position pos1, Position pos2) const {
 		Call(SCI_BRACEHIGHLIGHT, pos1, pos2);
 	}
 
@@ -1782,7 +1791,7 @@ public:
 		Call(SCI_BRACEHIGHLIGHTINDICATOR, useBraceHighlightIndicator, indicator);
 	}
 
-	void BraceBadLight(int pos) const {
+	void BraceBadLight(Position pos) const {
 		Call(SCI_BRACEBADLIGHT, pos, SCI_UNUSED);
 	}
 
@@ -1790,13 +1799,13 @@ public:
 		Call(SCI_BRACEBADLIGHTINDICATOR, useBraceBadLightIndicator, indicator);
 	}
 
-	int BraceMatch(int pos) const {
-		int res = Call(SCI_BRACEMATCH, pos, SCI_UNUSED);
-		return res;
+	Position BraceMatch(Position pos) const {
+		sptr_t res = Call(SCI_BRACEMATCH, pos, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	bool GetViewEOL() const {
-		int res = Call(SCI_GETVIEWEOL, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETVIEWEOL, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1805,8 +1814,8 @@ public:
 	}
 
 	int GetDocPointer() const {
-		int res = Call(SCI_GETDOCPOINTER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETDOCPOINTER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetDocPointer(int pointer) const {
@@ -1818,8 +1827,8 @@ public:
 	}
 
 	int GetEdgeColumn() const {
-		int res = Call(SCI_GETEDGECOLUMN, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETEDGECOLUMN, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetEdgeColumn(int column) const {
@@ -1827,20 +1836,20 @@ public:
 	}
 
 	int GetEdgeMode() const {
-		int res = Call(SCI_GETEDGEMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETEDGEMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetEdgeMode(int mode) const {
 		Call(SCI_SETEDGEMODE, mode, SCI_UNUSED);
 	}
 
-	int GetEdgeColour() const {
-		int res = Call(SCI_GETEDGECOLOUR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetEdgeColour() const {
+		sptr_t res = Call(SCI_GETEDGECOLOUR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
-	void SetEdgeColour(int edgeColour) const {
+	void SetEdgeColour(Colour edgeColour) const {
 		Call(SCI_SETEDGECOLOUR, edgeColour, SCI_UNUSED);
 	}
 
@@ -1849,18 +1858,18 @@ public:
 	}
 
 	int SearchNext(int flags, const char* text) const {
-		int res = Call(SCI_SEARCHNEXT, flags, text);
-		return res;
+		sptr_t res = Call(SCI_SEARCHNEXT, flags, text);
+		return static_cast<int>(res);
 	}
 
 	int SearchPrev(int flags, const char* text) const {
-		int res = Call(SCI_SEARCHPREV, flags, text);
-		return res;
+		sptr_t res = Call(SCI_SEARCHPREV, flags, text);
+		return static_cast<int>(res);
 	}
 
 	int LinesOnScreen() const {
-		int res = Call(SCI_LINESONSCREEN, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_LINESONSCREEN, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void UsePopUp(bool allowPopUp) const {
@@ -1868,7 +1877,7 @@ public:
 	}
 
 	bool SelectionIsRectangle() const {
-		int res = Call(SCI_SELECTIONISRECTANGLE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_SELECTIONISRECTANGLE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1877,13 +1886,13 @@ public:
 	}
 
 	int GetZoom() const {
-		int res = Call(SCI_GETZOOM, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETZOOM, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int CreateDocument() const {
-		int res = Call(SCI_CREATEDOCUMENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_CREATEDOCUMENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AddRefDocument(int doc) const {
@@ -1895,8 +1904,8 @@ public:
 	}
 
 	int GetModEventMask() const {
-		int res = Call(SCI_GETMODEVENTMASK, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMODEVENTMASK, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetFocus(bool focus) const {
@@ -1904,7 +1913,7 @@ public:
 	}
 
 	bool GetFocus() const {
-		int res = Call(SCI_GETFOCUS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETFOCUS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1913,8 +1922,8 @@ public:
 	}
 
 	int GetStatus() const {
-		int res = Call(SCI_GETSTATUS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSTATUS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMouseDownCaptures(bool captures) const {
@@ -1922,7 +1931,7 @@ public:
 	}
 
 	bool GetMouseDownCaptures() const {
-		int res = Call(SCI_GETMOUSEDOWNCAPTURES, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETMOUSEDOWNCAPTURES, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -1931,8 +1940,8 @@ public:
 	}
 
 	int GetCursor() const {
-		int res = Call(SCI_GETCURSOR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCURSOR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetControlCharSymbol(int symbol) const {
@@ -1940,8 +1949,8 @@ public:
 	}
 
 	int GetControlCharSymbol() const {
-		int res = Call(SCI_GETCONTROLCHARSYMBOL, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCONTROLCHARSYMBOL, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void WordPartLeft() const {
@@ -1977,8 +1986,8 @@ public:
 	}
 
 	int GetXOffset() const {
-		int res = Call(SCI_GETXOFFSET, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETXOFFSET, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void ChooseCaretX() const {
@@ -2002,26 +2011,26 @@ public:
 	}
 
 	int GetPrintWrapMode() const {
-		int res = Call(SCI_GETPRINTWRAPMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPRINTWRAPMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetHotspotActiveFore(bool useSetting, int fore) const {
+	void SetHotspotActiveFore(bool useSetting, Colour fore) const {
 		Call(SCI_SETHOTSPOTACTIVEFORE, useSetting, fore);
 	}
 
-	int GetHotspotActiveFore() const {
-		int res = Call(SCI_GETHOTSPOTACTIVEFORE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetHotspotActiveFore() const {
+		sptr_t res = Call(SCI_GETHOTSPOTACTIVEFORE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
-	void SetHotspotActiveBack(bool useSetting, int back) const {
+	void SetHotspotActiveBack(bool useSetting, Colour back) const {
 		Call(SCI_SETHOTSPOTACTIVEBACK, useSetting, back);
 	}
 
-	int GetHotspotActiveBack() const {
-		int res = Call(SCI_GETHOTSPOTACTIVEBACK, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetHotspotActiveBack() const {
+		sptr_t res = Call(SCI_GETHOTSPOTACTIVEBACK, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	void SetHotspotActiveUnderline(bool underline) const {
@@ -2029,7 +2038,7 @@ public:
 	}
 
 	bool GetHotspotActiveUnderline() const {
-		int res = Call(SCI_GETHOTSPOTACTIVEUNDERLINE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETHOTSPOTACTIVEUNDERLINE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2038,7 +2047,7 @@ public:
 	}
 
 	bool GetHotspotSingleLine() const {
-		int res = Call(SCI_GETHOTSPOTSINGLELINE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETHOTSPOTSINGLELINE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2058,22 +2067,22 @@ public:
 		Call(SCI_PARAUPEXTEND, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	int PositionBefore(int pos) const {
-		int res = Call(SCI_POSITIONBEFORE, pos, SCI_UNUSED);
-		return res;
+	Position PositionBefore(Position pos) const {
+		sptr_t res = Call(SCI_POSITIONBEFORE, pos, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int PositionAfter(int pos) const {
-		int res = Call(SCI_POSITIONAFTER, pos, SCI_UNUSED);
-		return res;
+	Position PositionAfter(Position pos) const {
+		sptr_t res = Call(SCI_POSITIONAFTER, pos, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int PositionRelative(int pos, int relative) const {
-		int res = Call(SCI_POSITIONRELATIVE, pos, relative);
-		return res;
+	Position PositionRelative(Position pos, int relative) const {
+		sptr_t res = Call(SCI_POSITIONRELATIVE, pos, relative);
+		return static_cast<Position>(res);
 	}
 
-	void CopyRange(int start, int end) const {
+	void CopyRange(Position start, Position end) const {
 		Call(SCI_COPYRANGE, start, end);
 	}
 
@@ -2086,18 +2095,18 @@ public:
 	}
 
 	int GetSelectionMode() const {
-		int res = Call(SCI_GETSELECTIONMODE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSELECTIONMODE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	int GetLineSelStartPosition(int line) const {
-		int res = Call(SCI_GETLINESELSTARTPOSITION, line, SCI_UNUSED);
-		return res;
+	Position GetLineSelStartPosition(int line) const {
+		sptr_t res = Call(SCI_GETLINESELSTARTPOSITION, line, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	int GetLineSelEndPosition(int line) const {
-		int res = Call(SCI_GETLINESELENDPOSITION, line, SCI_UNUSED);
-		return res;
+	Position GetLineSelEndPosition(int line) const {
+		sptr_t res = Call(SCI_GETLINESELENDPOSITION, line, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void LineDownRectExtend() const {
@@ -2173,8 +2182,8 @@ public:
 	}
 
 	int GetWhitespaceChars(char* characters) const {
-		int res = Call(SCI_GETWHITESPACECHARS, SCI_UNUSED, characters);
-		return res;
+		sptr_t res = Call(SCI_GETWHITESPACECHARS, SCI_UNUSED, characters);
+		return static_cast<int>(res);
 	}
 
 	void SetPunctuationChars(const char* characters) const {
@@ -2182,8 +2191,8 @@ public:
 	}
 
 	int GetPunctuationChars(char* characters) const {
-		int res = Call(SCI_GETPUNCTUATIONCHARS, SCI_UNUSED, characters);
-		return res;
+		sptr_t res = Call(SCI_GETPUNCTUATIONCHARS, SCI_UNUSED, characters);
+		return static_cast<int>(res);
 	}
 
 	void SetCharsDefault() const {
@@ -2191,13 +2200,13 @@ public:
 	}
 
 	int AutoCGetCurrent() const {
-		int res = Call(SCI_AUTOCGETCURRENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETCURRENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int AutoCGetCurrentText(char* s) const {
-		int res = Call(SCI_AUTOCGETCURRENTTEXT, SCI_UNUSED, s);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETCURRENTTEXT, SCI_UNUSED, s);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSetCaseInsensitiveBehaviour(int behaviour) const {
@@ -2205,8 +2214,8 @@ public:
 	}
 
 	int AutoCGetCaseInsensitiveBehaviour() const {
-		int res = Call(SCI_AUTOCGETCASEINSENSITIVEBEHAVIOUR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETCASEINSENSITIVEBEHAVIOUR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSetMulti(int multi) const {
@@ -2214,8 +2223,8 @@ public:
 	}
 
 	int AutoCGetMulti() const {
-		int res = Call(SCI_AUTOCGETMULTI, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETMULTI, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AutoCSetOrder(int order) const {
@@ -2223,8 +2232,8 @@ public:
 	}
 
 	int AutoCGetOrder() const {
-		int res = Call(SCI_AUTOCGETORDER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_AUTOCGETORDER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void Allocate(int bytes) const {
@@ -2232,8 +2241,8 @@ public:
 	}
 
 	int TargetAsUTF8(char* s) const {
-		int res = Call(SCI_TARGETASUTF8, SCI_UNUSED, s);
-		return res;
+		sptr_t res = Call(SCI_TARGETASUTF8, SCI_UNUSED, s);
+		return static_cast<int>(res);
 	}
 
 	void SetLengthForEncode(int bytes) const {
@@ -2241,18 +2250,18 @@ public:
 	}
 
 	int EncodedFromUTF8(const char* utf8, char* encoded) const {
-		int res = Call(SCI_ENCODEDFROMUTF8, utf8, encoded);
-		return res;
+		sptr_t res = Call(SCI_ENCODEDFROMUTF8, utf8, encoded);
+		return static_cast<int>(res);
 	}
 
 	int FindColumn(int line, int column) const {
-		int res = Call(SCI_FINDCOLUMN, line, column);
-		return res;
+		sptr_t res = Call(SCI_FINDCOLUMN, line, column);
+		return static_cast<int>(res);
 	}
 
 	int GetCaretSticky() const {
-		int res = Call(SCI_GETCARETSTICKY, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCARETSTICKY, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetCaretSticky(int useCaretStickyBehaviour) const {
@@ -2268,7 +2277,7 @@ public:
 	}
 
 	bool GetPasteConvertEndings() const {
-		int res = Call(SCI_GETPASTECONVERTENDINGS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETPASTECONVERTENDINGS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2281,8 +2290,8 @@ public:
 	}
 
 	int GetCaretLineBackAlpha() const {
-		int res = Call(SCI_GETCARETLINEBACKALPHA, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCARETLINEBACKALPHA, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetCaretStyle(int caretStyle) const {
@@ -2290,8 +2299,8 @@ public:
 	}
 
 	int GetCaretStyle() const {
-		int res = Call(SCI_GETCARETSTYLE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCARETSTYLE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetIndicatorCurrent(int indicator) const {
@@ -2299,8 +2308,8 @@ public:
 	}
 
 	int GetIndicatorCurrent() const {
-		int res = Call(SCI_GETINDICATORCURRENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETINDICATORCURRENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetIndicatorValue(int value) const {
@@ -2308,8 +2317,8 @@ public:
 	}
 
 	int GetIndicatorValue() const {
-		int res = Call(SCI_GETINDICATORVALUE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETINDICATORVALUE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void IndicatorFillRange(int position, int fillLength) const {
@@ -2321,23 +2330,23 @@ public:
 	}
 
 	int IndicatorAllOnFor(int position) const {
-		int res = Call(SCI_INDICATORALLONFOR, position, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICATORALLONFOR, position, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int IndicatorValueAt(int indicator, int position) const {
-		int res = Call(SCI_INDICATORVALUEAT, indicator, position);
-		return res;
+		sptr_t res = Call(SCI_INDICATORVALUEAT, indicator, position);
+		return static_cast<int>(res);
 	}
 
 	int IndicatorStart(int indicator, int position) const {
-		int res = Call(SCI_INDICATORSTART, indicator, position);
-		return res;
+		sptr_t res = Call(SCI_INDICATORSTART, indicator, position);
+		return static_cast<int>(res);
 	}
 
 	int IndicatorEnd(int indicator, int position) const {
-		int res = Call(SCI_INDICATOREND, indicator, position);
-		return res;
+		sptr_t res = Call(SCI_INDICATOREND, indicator, position);
+		return static_cast<int>(res);
 	}
 
 	void SetPositionCache(int size) const {
@@ -2345,8 +2354,8 @@ public:
 	}
 
 	int GetPositionCache() const {
-		int res = Call(SCI_GETPOSITIONCACHE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPOSITIONCACHE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void CopyAllowLine() const {
@@ -2354,18 +2363,18 @@ public:
 	}
 
 	int GetCharacterPointer() const {
-		int res = Call(SCI_GETCHARACTERPOINTER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETCHARACTERPOINTER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetRangePointer(int position, int rangeLength) const {
-		int res = Call(SCI_GETRANGEPOINTER, position, rangeLength);
-		return res;
+		sptr_t res = Call(SCI_GETRANGEPOINTER, position, rangeLength);
+		return static_cast<int>(res);
 	}
 
-	int GetGapPosition() const {
-		int res = Call(SCI_GETGAPPOSITION, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetGapPosition() const {
+		sptr_t res = Call(SCI_GETGAPPOSITION, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void IndicSetAlpha(int indicator, int alpha) const {
@@ -2373,8 +2382,8 @@ public:
 	}
 
 	int IndicGetAlpha(int indicator) const {
-		int res = Call(SCI_INDICGETALPHA, indicator, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICGETALPHA, indicator, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void IndicSetOutlineAlpha(int indicator, int alpha) const {
@@ -2382,8 +2391,8 @@ public:
 	}
 
 	int IndicGetOutlineAlpha(int indicator) const {
-		int res = Call(SCI_INDICGETOUTLINEALPHA, indicator, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_INDICGETOUTLINEALPHA, indicator, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetExtraAscent(int extraAscent) const {
@@ -2391,8 +2400,8 @@ public:
 	}
 
 	int GetExtraAscent() const {
-		int res = Call(SCI_GETEXTRAASCENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETEXTRAASCENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetExtraDescent(int extraDescent) const {
@@ -2400,13 +2409,13 @@ public:
 	}
 
 	int GetExtraDescent() const {
-		int res = Call(SCI_GETEXTRADESCENT, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETEXTRADESCENT, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int MarkerSymbolDefined(int markerNumber) const {
-		int res = Call(SCI_MARKERSYMBOLDEFINED, markerNumber, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_MARKERSYMBOLDEFINED, markerNumber, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void MarginSetText(int line, const char* text) const {
@@ -2414,8 +2423,8 @@ public:
 	}
 
 	int MarginGetText(int line, char* text) const {
-		int res = Call(SCI_MARGINGETTEXT, line, text);
-		return res;
+		sptr_t res = Call(SCI_MARGINGETTEXT, line, text);
+		return static_cast<int>(res);
 	}
 
 	void MarginSetStyle(int line, int style) const {
@@ -2423,8 +2432,8 @@ public:
 	}
 
 	int MarginGetStyle(int line) const {
-		int res = Call(SCI_MARGINGETSTYLE, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_MARGINGETSTYLE, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void MarginSetStyles(int line, const char* styles) const {
@@ -2432,8 +2441,8 @@ public:
 	}
 
 	int MarginGetStyles(int line, char* styles) const {
-		int res = Call(SCI_MARGINGETSTYLES, line, styles);
-		return res;
+		sptr_t res = Call(SCI_MARGINGETSTYLES, line, styles);
+		return static_cast<int>(res);
 	}
 
 	void MarginTextClearAll() const {
@@ -2445,8 +2454,8 @@ public:
 	}
 
 	int MarginGetStyleOffset() const {
-		int res = Call(SCI_MARGINGETSTYLEOFFSET, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_MARGINGETSTYLEOFFSET, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetMarginOptions(int marginOptions) const {
@@ -2454,8 +2463,8 @@ public:
 	}
 
 	int GetMarginOptions() const {
-		int res = Call(SCI_GETMARGINOPTIONS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMARGINOPTIONS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AnnotationSetText(int line, const char* text) const {
@@ -2463,8 +2472,8 @@ public:
 	}
 
 	int AnnotationGetText(int line, char* text) const {
-		int res = Call(SCI_ANNOTATIONGETTEXT, line, text);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETTEXT, line, text);
+		return static_cast<int>(res);
 	}
 
 	void AnnotationSetStyle(int line, int style) const {
@@ -2472,8 +2481,8 @@ public:
 	}
 
 	int AnnotationGetStyle(int line) const {
-		int res = Call(SCI_ANNOTATIONGETSTYLE, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETSTYLE, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AnnotationSetStyles(int line, const char* styles) const {
@@ -2481,13 +2490,13 @@ public:
 	}
 
 	int AnnotationGetStyles(int line, char* styles) const {
-		int res = Call(SCI_ANNOTATIONGETSTYLES, line, styles);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETSTYLES, line, styles);
+		return static_cast<int>(res);
 	}
 
 	int AnnotationGetLines(int line) const {
-		int res = Call(SCI_ANNOTATIONGETLINES, line, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETLINES, line, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AnnotationClearAll() const {
@@ -2499,8 +2508,8 @@ public:
 	}
 
 	int AnnotationGetVisible() const {
-		int res = Call(SCI_ANNOTATIONGETVISIBLE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETVISIBLE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AnnotationSetStyleOffset(int style) const {
@@ -2508,8 +2517,8 @@ public:
 	}
 
 	int AnnotationGetStyleOffset() const {
-		int res = Call(SCI_ANNOTATIONGETSTYLEOFFSET, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_ANNOTATIONGETSTYLEOFFSET, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void ReleaseAllExtendedStyles() const {
@@ -2517,22 +2526,22 @@ public:
 	}
 
 	int AllocateExtendedStyles(int numberStyles) const {
-		int res = Call(SCI_ALLOCATEEXTENDEDSTYLES, numberStyles, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_ALLOCATEEXTENDEDSTYLES, numberStyles, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void AddUndoAction(int token, int flags) const {
 		Call(SCI_ADDUNDOACTION, token, flags);
 	}
 
-	int CharPositionFromPoint(int x, int y) const {
-		int res = Call(SCI_CHARPOSITIONFROMPOINT, x, y);
-		return res;
+	Position CharPositionFromPoint(int x, int y) const {
+		sptr_t res = Call(SCI_CHARPOSITIONFROMPOINT, x, y);
+		return static_cast<Position>(res);
 	}
 
-	int CharPositionFromPointClose(int x, int y) const {
-		int res = Call(SCI_CHARPOSITIONFROMPOINTCLOSE, x, y);
-		return res;
+	Position CharPositionFromPointClose(int x, int y) const {
+		sptr_t res = Call(SCI_CHARPOSITIONFROMPOINTCLOSE, x, y);
+		return static_cast<Position>(res);
 	}
 
 	void SetMouseSelectionRectangularSwitch(bool mouseSelectionRectangularSwitch) const {
@@ -2540,7 +2549,7 @@ public:
 	}
 
 	bool GetMouseSelectionRectangularSwitch() const {
-		int res = Call(SCI_GETMOUSESELECTIONRECTANGULARSWITCH, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETMOUSESELECTIONRECTANGULARSWITCH, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2549,7 +2558,7 @@ public:
 	}
 
 	bool GetMultipleSelection() const {
-		int res = Call(SCI_GETMULTIPLESELECTION, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETMULTIPLESELECTION, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2558,7 +2567,7 @@ public:
 	}
 
 	bool GetAdditionalSelectionTyping() const {
-		int res = Call(SCI_GETADDITIONALSELECTIONTYPING, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETADDITIONALSELECTIONTYPING, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2567,7 +2576,7 @@ public:
 	}
 
 	bool GetAdditionalCaretsBlink() const {
-		int res = Call(SCI_GETADDITIONALCARETSBLINK, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETADDITIONALCARETSBLINK, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2576,17 +2585,17 @@ public:
 	}
 
 	bool GetAdditionalCaretsVisible() const {
-		int res = Call(SCI_GETADDITIONALCARETSVISIBLE, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETADDITIONALCARETSVISIBLE, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
 	int GetSelections() const {
-		int res = Call(SCI_GETSELECTIONS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSELECTIONS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	bool GetSelectionEmpty() const {
-		int res = Call(SCI_GETSELECTIONEMPTY, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETSELECTIONEMPTY, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2595,13 +2604,13 @@ public:
 	}
 
 	int SetSelection(int caret, int anchor) const {
-		int res = Call(SCI_SETSELECTION, caret, anchor);
-		return res;
+		sptr_t res = Call(SCI_SETSELECTION, caret, anchor);
+		return static_cast<int>(res);
 	}
 
 	int AddSelection(int caret, int anchor) const {
-		int res = Call(SCI_ADDSELECTION, caret, anchor);
-		return res;
+		sptr_t res = Call(SCI_ADDSELECTION, caret, anchor);
+		return static_cast<int>(res);
 	}
 
 	void DropSelectionN(int selection) const {
@@ -2613,26 +2622,26 @@ public:
 	}
 
 	int GetMainSelection() const {
-		int res = Call(SCI_GETMAINSELECTION, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETMAINSELECTION, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetSelectionNCaret(int selection, int pos) const {
+	void SetSelectionNCaret(int selection, Position pos) const {
 		Call(SCI_SETSELECTIONNCARET, selection, pos);
 	}
 
-	int GetSelectionNCaret(int selection) const {
-		int res = Call(SCI_GETSELECTIONNCARET, selection, SCI_UNUSED);
-		return res;
+	Position GetSelectionNCaret(int selection) const {
+		sptr_t res = Call(SCI_GETSELECTIONNCARET, selection, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetSelectionNAnchor(int selection, int posAnchor) const {
+	void SetSelectionNAnchor(int selection, Position posAnchor) const {
 		Call(SCI_SETSELECTIONNANCHOR, selection, posAnchor);
 	}
 
-	int GetSelectionNAnchor(int selection) const {
-		int res = Call(SCI_GETSELECTIONNANCHOR, selection, SCI_UNUSED);
-		return res;
+	Position GetSelectionNAnchor(int selection) const {
+		sptr_t res = Call(SCI_GETSELECTIONNANCHOR, selection, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void SetSelectionNCaretVirtualSpace(int selection, int space) const {
@@ -2640,8 +2649,8 @@ public:
 	}
 
 	int GetSelectionNCaretVirtualSpace(int selection) const {
-		int res = Call(SCI_GETSELECTIONNCARETVIRTUALSPACE, selection, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSELECTIONNCARETVIRTUALSPACE, selection, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetSelectionNAnchorVirtualSpace(int selection, int space) const {
@@ -2649,44 +2658,44 @@ public:
 	}
 
 	int GetSelectionNAnchorVirtualSpace(int selection) const {
-		int res = Call(SCI_GETSELECTIONNANCHORVIRTUALSPACE, selection, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSELECTIONNANCHORVIRTUALSPACE, selection, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetSelectionNStart(int selection, int pos) const {
+	void SetSelectionNStart(int selection, Position pos) const {
 		Call(SCI_SETSELECTIONNSTART, selection, pos);
 	}
 
-	int GetSelectionNStart(int selection) const {
-		int res = Call(SCI_GETSELECTIONNSTART, selection, SCI_UNUSED);
-		return res;
+	Position GetSelectionNStart(int selection) const {
+		sptr_t res = Call(SCI_GETSELECTIONNSTART, selection, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetSelectionNEnd(int selection, int pos) const {
+	void SetSelectionNEnd(int selection, Position pos) const {
 		Call(SCI_SETSELECTIONNEND, selection, pos);
 	}
 
-	int GetSelectionNEnd(int selection) const {
-		int res = Call(SCI_GETSELECTIONNEND, selection, SCI_UNUSED);
-		return res;
+	Position GetSelectionNEnd(int selection) const {
+		sptr_t res = Call(SCI_GETSELECTIONNEND, selection, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetRectangularSelectionCaret(int pos) const {
+	void SetRectangularSelectionCaret(Position pos) const {
 		Call(SCI_SETRECTANGULARSELECTIONCARET, pos, SCI_UNUSED);
 	}
 
-	int GetRectangularSelectionCaret() const {
-		int res = Call(SCI_GETRECTANGULARSELECTIONCARET, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetRectangularSelectionCaret() const {
+		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONCARET, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
-	void SetRectangularSelectionAnchor(int posAnchor) const {
+	void SetRectangularSelectionAnchor(Position posAnchor) const {
 		Call(SCI_SETRECTANGULARSELECTIONANCHOR, posAnchor, SCI_UNUSED);
 	}
 
-	int GetRectangularSelectionAnchor() const {
-		int res = Call(SCI_GETRECTANGULARSELECTIONANCHOR, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Position GetRectangularSelectionAnchor() const {
+		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONANCHOR, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Position>(res);
 	}
 
 	void SetRectangularSelectionCaretVirtualSpace(int space) const {
@@ -2694,8 +2703,8 @@ public:
 	}
 
 	int GetRectangularSelectionCaretVirtualSpace() const {
-		int res = Call(SCI_GETRECTANGULARSELECTIONCARETVIRTUALSPACE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONCARETVIRTUALSPACE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetRectangularSelectionAnchorVirtualSpace(int space) const {
@@ -2703,8 +2712,8 @@ public:
 	}
 
 	int GetRectangularSelectionAnchorVirtualSpace() const {
-		int res = Call(SCI_GETRECTANGULARSELECTIONANCHORVIRTUALSPACE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONANCHORVIRTUALSPACE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetVirtualSpaceOptions(int virtualSpaceOptions) const {
@@ -2712,8 +2721,8 @@ public:
 	}
 
 	int GetVirtualSpaceOptions() const {
-		int res = Call(SCI_GETVIRTUALSPACEOPTIONS, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETVIRTUALSPACEOPTIONS, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetRectangularSelectionModifier(int modifier) const {
@@ -2721,15 +2730,15 @@ public:
 	}
 
 	int GetRectangularSelectionModifier() const {
-		int res = Call(SCI_GETRECTANGULARSELECTIONMODIFIER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONMODIFIER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetAdditionalSelFore(int fore) const {
+	void SetAdditionalSelFore(Colour fore) const {
 		Call(SCI_SETADDITIONALSELFORE, fore, SCI_UNUSED);
 	}
 
-	void SetAdditionalSelBack(int back) const {
+	void SetAdditionalSelBack(Colour back) const {
 		Call(SCI_SETADDITIONALSELBACK, back, SCI_UNUSED);
 	}
 
@@ -2738,17 +2747,17 @@ public:
 	}
 
 	int GetAdditionalSelAlpha() const {
-		int res = Call(SCI_GETADDITIONALSELALPHA, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETADDITIONALSELALPHA, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void SetAdditionalCaretFore(int fore) const {
+	void SetAdditionalCaretFore(Colour fore) const {
 		Call(SCI_SETADDITIONALCARETFORE, fore, SCI_UNUSED);
 	}
 
-	int GetAdditionalCaretFore() const {
-		int res = Call(SCI_GETADDITIONALCARETFORE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+	Colour GetAdditionalCaretFore() const {
+		sptr_t res = Call(SCI_GETADDITIONALCARETFORE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<Colour>(res);
 	}
 
 	void RotateSelection() const {
@@ -2759,14 +2768,14 @@ public:
 		Call(SCI_SWAPMAINANCHORCARET, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	int ChangeLexerState(int start, int end) const {
-		int res = Call(SCI_CHANGELEXERSTATE, start, end);
-		return res;
+	int ChangeLexerState(Position start, Position end) const {
+		sptr_t res = Call(SCI_CHANGELEXERSTATE, start, end);
+		return static_cast<int>(res);
 	}
 
 	int ContractedFoldNext(int lineStart) const {
-		int res = Call(SCI_CONTRACTEDFOLDNEXT, lineStart, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_CONTRACTEDFOLDNEXT, lineStart, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void VerticalCentreCaret() const {
@@ -2786,8 +2795,8 @@ public:
 	}
 
 	int GetIdentifier() const {
-		int res = Call(SCI_GETIDENTIFIER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETIDENTIFIER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void RGBAImageSetWidth(int width) const {
@@ -2823,20 +2832,20 @@ public:
 	}
 
 	int GetTechnology() const {
-		int res = Call(SCI_GETTECHNOLOGY, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETTECHNOLOGY, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int CreateLoader(int bytes) const {
-		int res = Call(SCI_CREATELOADER, bytes, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_CREATELOADER, bytes, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void FindIndicatorShow(int start, int end) const {
+	void FindIndicatorShow(Position start, Position end) const {
 		Call(SCI_FINDINDICATORSHOW, start, end);
 	}
 
-	void FindIndicatorFlash(int start, int end) const {
+	void FindIndicatorFlash(Position start, Position end) const {
 		Call(SCI_FINDINDICATORFLASH, start, end);
 	}
 
@@ -2853,7 +2862,7 @@ public:
 	}
 
 	bool GetCaretLineVisibleAlways() const {
-		int res = Call(SCI_GETCARETLINEVISIBLEALWAYS, SCI_UNUSED, SCI_UNUSED);
+		sptr_t res = Call(SCI_GETCARETLINEVISIBLEALWAYS, SCI_UNUSED, SCI_UNUSED);
 		return res != 0;
 	}
 
@@ -2866,13 +2875,13 @@ public:
 	}
 
 	int GetLineEndTypesAllowed() const {
-		int res = Call(SCI_GETLINEENDTYPESALLOWED, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINEENDTYPESALLOWED, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetLineEndTypesActive() const {
-		int res = Call(SCI_GETLINEENDTYPESACTIVE, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINEENDTYPESACTIVE, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void SetRepresentation(const char* encodedCharacter, const char* representation) const {
@@ -2880,8 +2889,8 @@ public:
 	}
 
 	int GetRepresentation(const char* encodedCharacter, char* representation) const {
-		int res = Call(SCI_GETREPRESENTATION, encodedCharacter, representation);
-		return res;
+		sptr_t res = Call(SCI_GETREPRESENTATION, encodedCharacter, representation);
+		return static_cast<int>(res);
 	}
 
 	void ClearRepresentation(const char* encodedCharacter) const {
@@ -2901,11 +2910,11 @@ public:
 	}
 
 	int GetLexer() const {
-		int res = Call(SCI_GETLEXER, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLEXER, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
-	void Colourise(int start, int end) const {
+	void Colourise(Position start, Position end) const {
 		Call(SCI_COLOURISE, start, end);
 	}
 
@@ -2926,83 +2935,83 @@ public:
 	}
 
 	int GetProperty(const char* key, char* buf) const {
-		int res = Call(SCI_GETPROPERTY, key, buf);
-		return res;
+		sptr_t res = Call(SCI_GETPROPERTY, key, buf);
+		return static_cast<int>(res);
 	}
 
 	int GetPropertyExpanded(const char* key, char* buf) const {
-		int res = Call(SCI_GETPROPERTYEXPANDED, key, buf);
-		return res;
+		sptr_t res = Call(SCI_GETPROPERTYEXPANDED, key, buf);
+		return static_cast<int>(res);
 	}
 
 	int GetPropertyInt(const char* key) const {
-		int res = Call(SCI_GETPROPERTYINT, key, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPROPERTYINT, key, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetStyleBitsNeeded() const {
-		int res = Call(SCI_GETSTYLEBITSNEEDED, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSTYLEBITSNEEDED, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetLexerLanguage(char* text) const {
-		int res = Call(SCI_GETLEXERLANGUAGE, SCI_UNUSED, text);
-		return res;
+		sptr_t res = Call(SCI_GETLEXERLANGUAGE, SCI_UNUSED, text);
+		return static_cast<int>(res);
 	}
 
 	int PrivateLexerCall(int operation, sptr_t pointer) const {
-		int res = Call(SCI_PRIVATELEXERCALL, operation, pointer);
-		return res;
+		sptr_t res = Call(SCI_PRIVATELEXERCALL, operation, pointer);
+		return static_cast<int>(res);
 	}
 
 	int PropertyNames(char* names) const {
-		int res = Call(SCI_PROPERTYNAMES, SCI_UNUSED, names);
-		return res;
+		sptr_t res = Call(SCI_PROPERTYNAMES, SCI_UNUSED, names);
+		return static_cast<int>(res);
 	}
 
 	int PropertyType(const char* name) const {
-		int res = Call(SCI_PROPERTYTYPE, name, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_PROPERTYTYPE, name, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int DescribeProperty(const char* name, char* description) const {
-		int res = Call(SCI_DESCRIBEPROPERTY, name, description);
-		return res;
+		sptr_t res = Call(SCI_DESCRIBEPROPERTY, name, description);
+		return static_cast<int>(res);
 	}
 
 	int DescribeKeyWordSets(char* descriptions) const {
-		int res = Call(SCI_DESCRIBEKEYWORDSETS, SCI_UNUSED, descriptions);
-		return res;
+		sptr_t res = Call(SCI_DESCRIBEKEYWORDSETS, SCI_UNUSED, descriptions);
+		return static_cast<int>(res);
 	}
 
 	int GetLineEndTypesSupported() const {
-		int res = Call(SCI_GETLINEENDTYPESSUPPORTED, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETLINEENDTYPESSUPPORTED, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int AllocateSubStyles(int styleBase, int numberStyles) const {
-		int res = Call(SCI_ALLOCATESUBSTYLES, styleBase, numberStyles);
-		return res;
+		sptr_t res = Call(SCI_ALLOCATESUBSTYLES, styleBase, numberStyles);
+		return static_cast<int>(res);
 	}
 
 	int GetSubStylesStart(int styleBase) const {
-		int res = Call(SCI_GETSUBSTYLESSTART, styleBase, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSUBSTYLESSTART, styleBase, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetSubStylesLength(int styleBase) const {
-		int res = Call(SCI_GETSUBSTYLESLENGTH, styleBase, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSUBSTYLESLENGTH, styleBase, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetStyleFromSubStyle(int subStyle) const {
-		int res = Call(SCI_GETSTYLEFROMSUBSTYLE, subStyle, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETSTYLEFROMSUBSTYLE, subStyle, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetPrimaryStyleFromStyle(int style) const {
-		int res = Call(SCI_GETPRIMARYSTYLEFROMSTYLE, style, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_GETPRIMARYSTYLEFROMSTYLE, style, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	void FreeSubStyles() const {
@@ -3014,13 +3023,13 @@ public:
 	}
 
 	int DistanceToSecondaryStyles() const {
-		int res = Call(SCI_DISTANCETOSECONDARYSTYLES, SCI_UNUSED, SCI_UNUSED);
-		return res;
+		sptr_t res = Call(SCI_DISTANCETOSECONDARYSTYLES, SCI_UNUSED, SCI_UNUSED);
+		return static_cast<int>(res);
 	}
 
 	int GetSubStyleBases(char* styles) const {
-		int res = Call(SCI_GETSUBSTYLEBASES, SCI_UNUSED, styles);
-		return res;
+		sptr_t res = Call(SCI_GETSUBSTYLEBASES, SCI_UNUSED, styles);
+		return static_cast<int>(res);
 	}
 
 	/* --Autogenerated -- end of section automatically generated from Scintilla.iface */
