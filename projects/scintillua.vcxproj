@@ -85,7 +85,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetExt>.dll</TargetExt>
-    <TargetName>LexLPeg</TargetName>
+    <TargetName>LexLPeg_64</TargetName>
     <OutDir>..\bin\$(Configuration)_$(Platform)\</OutDir>
     <IntDir>build\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
@@ -97,7 +97,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetExt>.dll</TargetExt>
-    <TargetName>LexLPeg</TargetName>
+    <TargetName>LexLPeg_64</TargetName>
     <OutDir>..\bin\$(Configuration)_$(Platform)\</OutDir>
     <IntDir>build\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>

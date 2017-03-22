@@ -158,7 +158,11 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 			// Get the path to the external lexer
 			wchar_t config_dir[MAX_PATH] = { 0 };
 			SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
+#ifdef _WIN64
+			wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\LexLPeg_64.dll");
+#else
 			wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\LexLPeg.dll");
+#endif
 
 			ScintillaGateway editor1(nppData._scintillaMainHandle);
 			ScintillaGateway editor2(nppData._scintillaSecondHandle);
