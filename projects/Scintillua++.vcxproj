@@ -104,13 +104,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>$(ProjectName)_64</TargetName>
-    <OutDir>bin\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>bin\$(Configuration)_$(Platform)\</IntDir>
+    <OutDir>..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>build\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>$(ProjectName)_64</TargetName>
-    <OutDir>bin\$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>bin\$(Configuration)_$(Platform)\</IntDir>
+    <OutDir>..\bin\$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>build\$(Configuration)_$(Platform)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -180,7 +180,16 @@ copy "$(SolutionDir)extra\npp.lua" "$(APPDATA)\Notepad++\plugins\config\Scintill
       <ImportLibrary>$(OutDir)Scintillua++.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if EXIST "C:\Program Files\Notepad++\plugins" (copy "$(TargetPath)" "C:\Program Files\Notepad++\plugins")</Command>
+      <Command>if EXIST "C:\Program Files\Notepad++\plugins" (
+copy "$(TargetPath)" "C:\Program Files\Notepad++\plugins"
+
+if not EXIST "$(APPDATA)\Notepad++\plugins\config\Scintillua++\" (mkdir "$(APPDATA)\Notepad++\plugins\config\Scintillua++\")
+
+copy "$(SolutionDir)bin\$(Configuration)_$(Platform)\LexLPeg_64.dll" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\"
+xcopy "$(SolutionDir)ext\scintillua\lexers\*" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\" /E /y
+copy "$(SolutionDir)extra\Scintillua++.ini" "$(APPDATA)\Notepad++\plugins\config\"
+copy "$(SolutionDir)extra\npp.lua" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\themes"
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -242,7 +251,16 @@ copy "$(SolutionDir)extra\npp.lua" "$(APPDATA)\Notepad++\plugins\config\Scintill
       <ImportLibrary>$(OutDir)Scintillua++.lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if EXIST "C:\Program Files\Notepad++\plugins" (copy "$(TargetPath)" "C:\Program Files\Notepad++\plugins")</Command>
+      <Command>if EXIST "C:\Program Files\Notepad++\plugins" (
+copy "$(TargetPath)" "C:\Program Files\Notepad++\plugins"
+
+if not EXIST "$(APPDATA)\Notepad++\plugins\config\Scintillua++\" (mkdir "$(APPDATA)\Notepad++\plugins\config\Scintillua++\")
+
+copy "$(SolutionDir)bin\$(Configuration)_$(Platform)\LexLPeg_64.dll" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\"
+xcopy "$(SolutionDir)ext\scintillua\lexers\*" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\" /E /y
+copy "$(SolutionDir)extra\Scintillua++.ini" "$(APPDATA)\Notepad++\plugins\config\"
+copy "$(SolutionDir)extra\npp.lua" "$(APPDATA)\Notepad++\plugins\config\Scintillua++\themes"
+)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

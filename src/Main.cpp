@@ -82,7 +82,7 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 
 	editor.PrivateLexerCall(SCI_GETDIRECTFUNCTION, editor.GetDirectFunction());
 	editor.PrivateLexerCall(SCI_SETDOCPOINTER, editor.GetDirectPointer());
-	editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<int>(language.c_str()));
+	editor.PrivateLexerCall(SCI_SETLEXERLANGUAGE, reinterpret_cast<sptr_t>(language.c_str()));
 
 	// Always show the folding margin. Since N++ doesn't recognize the file it won't have the margin showing.
 	editor.SetMarginWidthN(2, 14);
@@ -163,7 +163,11 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 			// Get the path to the external lexer
 			wchar_t config_dir[MAX_PATH] = { 0 };
 			SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
+#ifdef _WIN64
+			wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\LexLPeg_64.dll");
+#else
 			wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\LexLPeg.dll");
+#endif
 
 			ScintillaGateway editor1(nppData._scintillaMainHandle);
 			ScintillaGateway editor2(nppData._scintillaSecondHandle);
