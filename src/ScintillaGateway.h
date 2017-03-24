@@ -26,7 +26,6 @@ typedef struct {
 } Cell;
 
 typedef int Colour;
-typedef int Position;
 typedef int KeyModifier;
 
 class ScintillaGateway final {
@@ -68,7 +67,7 @@ public:
 		Call(SCI_ADDSTYLEDTEXT, length, c);
 	}
 
-	void InsertText(Position pos, const char* text) const {
+	void InsertText(int pos, const char* text) const {
 		Call(SCI_INSERTTEXT, pos, text);
 	}
 
@@ -80,7 +79,7 @@ public:
 		Call(SCI_CLEARALL, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	void DeleteRange(Position pos, int deleteLength) const {
+	void DeleteRange(int pos, int deleteLength) const {
 		Call(SCI_DELETERANGE, pos, deleteLength);
 	}
 
@@ -93,22 +92,22 @@ public:
 		return static_cast<int>(res);
 	}
 
-	int GetCharAt(Position pos) const {
+	int GetCharAt(int pos) const {
 		sptr_t res = Call(SCI_GETCHARAT, pos, SCI_UNUSED);
 		return static_cast<int>(res);
 	}
 
-	Position GetCurrentPos() const {
+	int GetCurrentPos() const {
 		sptr_t res = Call(SCI_GETCURRENTPOS, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position GetAnchor() const {
+	int GetAnchor() const {
 		sptr_t res = Call(SCI_GETANCHOR, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	int GetStyleAt(Position pos) const {
+	int GetStyleAt(int pos) const {
 		sptr_t res = Call(SCI_GETSTYLEAT, pos, SCI_UNUSED);
 		return static_cast<int>(res);
 	}
@@ -162,25 +161,25 @@ public:
 		Call(SCI_SETVIEWWS, viewWS, SCI_UNUSED);
 	}
 
-	Position PositionFromPoint(int x, int y) const {
+	int PositionFromPoint(int x, int y) const {
 		sptr_t res = Call(SCI_POSITIONFROMPOINT, x, y);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position PositionFromPointClose(int x, int y) const {
+	int PositionFromPointClose(int x, int y) const {
 		sptr_t res = Call(SCI_POSITIONFROMPOINTCLOSE, x, y);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void GotoLine(int line) const {
 		Call(SCI_GOTOLINE, line, SCI_UNUSED);
 	}
 
-	void GotoPos(Position pos) const {
+	void GotoPos(int pos) const {
 		Call(SCI_GOTOPOS, pos, SCI_UNUSED);
 	}
 
-	void SetAnchor(Position posAnchor) const {
+	void SetAnchor(int posAnchor) const {
 		Call(SCI_SETANCHOR, posAnchor, SCI_UNUSED);
 	}
 
@@ -189,9 +188,9 @@ public:
 		return static_cast<int>(res);
 	}
 
-	Position GetEndStyled() const {
+	int GetEndStyled() const {
 		sptr_t res = Call(SCI_GETENDSTYLED, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void ConvertEOLs(int eolMode) const {
@@ -207,7 +206,7 @@ public:
 		Call(SCI_SETEOLMODE, eolMode, SCI_UNUSED);
 	}
 
-	void StartStyling(Position pos, int mask) const {
+	void StartStyling(int pos, int mask) const {
 		Call(SCI_STARTSTYLING, pos, mask);
 	}
 
@@ -704,9 +703,9 @@ public:
 		return res != 0;
 	}
 
-	Position AutoCPosStart() const {
+	int AutoCPosStart() const {
 		sptr_t res = Call(SCI_AUTOCPOSSTART, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void AutoCComplete() const {
@@ -845,12 +844,12 @@ public:
 		return static_cast<int>(res);
 	}
 
-	Position GetLineIndentPosition(int line) const {
+	int GetLineIndentPosition(int line) const {
 		sptr_t res = Call(SCI_GETLINEINDENTPOSITION, line, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	int GetColumn(Position pos) const {
+	int GetColumn(int pos) const {
 		sptr_t res = Call(SCI_GETCOLUMN, pos, SCI_UNUSED);
 		return static_cast<int>(res);
 	}
@@ -887,9 +886,9 @@ public:
 		return static_cast<int>(res);
 	}
 
-	Position GetLineEndPosition(int line) const {
+	int GetLineEndPosition(int line) const {
 		sptr_t res = Call(SCI_GETLINEENDPOSITION, line, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	int GetCodePage() const {
@@ -907,29 +906,29 @@ public:
 		return res != 0;
 	}
 
-	void SetCurrentPos(Position pos) const {
+	void SetCurrentPos(int pos) const {
 		Call(SCI_SETCURRENTPOS, pos, SCI_UNUSED);
 	}
 
-	void SetSelectionStart(Position pos) const {
+	void SetSelectionStart(int pos) const {
 		Call(SCI_SETSELECTIONSTART, pos, SCI_UNUSED);
 	}
 
-	Position GetSelectionStart() const {
+	int GetSelectionStart() const {
 		sptr_t res = Call(SCI_GETSELECTIONSTART, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetSelectionEnd(Position pos) const {
+	void SetSelectionEnd(int pos) const {
 		Call(SCI_SETSELECTIONEND, pos, SCI_UNUSED);
 	}
 
-	Position GetSelectionEnd() const {
+	int GetSelectionEnd() const {
 		sptr_t res = Call(SCI_GETSELECTIONEND, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetEmptySelection(Position pos) const {
+	void SetEmptySelection(int pos) const {
 		Call(SCI_SETEMPTYSELECTION, pos, SCI_UNUSED);
 	}
 
@@ -951,14 +950,14 @@ public:
 		return static_cast<int>(res);
 	}
 
-	Position FindText(int flags, Sci_TextToFind* ft) const {
+	int FindText(int flags, Sci_TextToFind* ft) const {
 		sptr_t res = Call(SCI_FINDTEXT, flags, ft);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position FormatRange(bool draw, Sci_RangeToFormat* fr) const {
+	int FormatRange(bool draw, Sci_RangeToFormat* fr) const {
 		sptr_t res = Call(SCI_FORMATRANGE, draw, fr);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	int GetFirstVisibleLine() const {
@@ -999,7 +998,7 @@ public:
 		return res != 0;
 	}
 
-	void SetSel(Position start, Position end) const {
+	void SetSel(int start, int end) const {
 		Call(SCI_SETSEL, start, end);
 	}
 
@@ -1017,24 +1016,24 @@ public:
 		Call(SCI_HIDESELECTION, normal, SCI_UNUSED);
 	}
 
-	int PointXFromPosition(Position pos) const {
+	int PointXFromPosition(int pos) const {
 		sptr_t res = Call(SCI_POINTXFROMPOSITION, SCI_UNUSED, pos);
 		return static_cast<int>(res);
 	}
 
-	int PointYFromPosition(Position pos) const {
+	int PointYFromPosition(int pos) const {
 		sptr_t res = Call(SCI_POINTYFROMPOSITION, SCI_UNUSED, pos);
 		return static_cast<int>(res);
 	}
 
-	int LineFromPosition(Position pos) const {
+	int LineFromPosition(int pos) const {
 		sptr_t res = Call(SCI_LINEFROMPOSITION, pos, SCI_UNUSED);
 		return static_cast<int>(res);
 	}
 
-	Position PositionFromLine(int line) const {
+	int PositionFromLine(int line) const {
 		sptr_t res = Call(SCI_POSITIONFROMLINE, line, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void LineScroll(int columns, int lines) const {
@@ -1045,7 +1044,7 @@ public:
 		Call(SCI_SCROLLCARET, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	void ScrollRange(Position secondary, Position primary) const {
+	void ScrollRange(int secondary, int primary) const {
 		Call(SCI_SCROLLRANGE, secondary, primary);
 	}
 
@@ -1137,25 +1136,25 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void SetTargetStart(Position pos) const {
+	void SetTargetStart(int pos) const {
 		Call(SCI_SETTARGETSTART, pos, SCI_UNUSED);
 	}
 
-	Position GetTargetStart() const {
+	int GetTargetStart() const {
 		sptr_t res = Call(SCI_GETTARGETSTART, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetTargetEnd(Position pos) const {
+	void SetTargetEnd(int pos) const {
 		Call(SCI_SETTARGETEND, pos, SCI_UNUSED);
 	}
 
-	Position GetTargetEnd() const {
+	int GetTargetEnd() const {
 		sptr_t res = Call(SCI_GETTARGETEND, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetTargetRange(Position start, Position end) const {
+	void SetTargetRange(int start, int end) const {
 		Call(SCI_SETTARGETRANGE, start, end);
 	}
 
@@ -1188,7 +1187,7 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void CallTipShow(Position pos, const char* definition) const {
+	void CallTipShow(int pos, const char* definition) const {
 		Call(SCI_CALLTIPSHOW, pos, definition);
 	}
 
@@ -1201,9 +1200,9 @@ public:
 		return res != 0;
 	}
 
-	Position CallTipPosStart() const {
+	int CallTipPosStart() const {
 		sptr_t res = Call(SCI_CALLTIPPOSSTART, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void CallTipSetPosStart(int posStart) const {
@@ -1363,12 +1362,12 @@ public:
 		return static_cast<int>(res);
 	}
 
-	int WordStartPosition(Position pos, bool onlyWordCharacters) const {
+	int WordStartPosition(int pos, bool onlyWordCharacters) const {
 		sptr_t res = Call(SCI_WORDSTARTPOSITION, pos, onlyWordCharacters);
 		return static_cast<int>(res);
 	}
 
-	int WordEndPosition(Position pos, bool onlyWordCharacters) const {
+	int WordEndPosition(int pos, bool onlyWordCharacters) const {
 		sptr_t res = Call(SCI_WORDENDPOSITION, pos, onlyWordCharacters);
 		return static_cast<int>(res);
 	}
@@ -1783,7 +1782,7 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void BraceHighlight(Position pos1, Position pos2) const {
+	void BraceHighlight(int pos1, int pos2) const {
 		Call(SCI_BRACEHIGHLIGHT, pos1, pos2);
 	}
 
@@ -1791,7 +1790,7 @@ public:
 		Call(SCI_BRACEHIGHLIGHTINDICATOR, useBraceHighlightIndicator, indicator);
 	}
 
-	void BraceBadLight(Position pos) const {
+	void BraceBadLight(int pos) const {
 		Call(SCI_BRACEBADLIGHT, pos, SCI_UNUSED);
 	}
 
@@ -1799,9 +1798,9 @@ public:
 		Call(SCI_BRACEBADLIGHTINDICATOR, useBraceBadLightIndicator, indicator);
 	}
 
-	Position BraceMatch(Position pos) const {
+	int BraceMatch(int pos) const {
 		sptr_t res = Call(SCI_BRACEMATCH, pos, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	bool GetViewEOL() const {
@@ -1813,12 +1812,12 @@ public:
 		Call(SCI_SETVIEWEOL, visible, SCI_UNUSED);
 	}
 
-	int GetDocPointer() const {
+	sptr_t GetDocPointer() const {
 		sptr_t res = Call(SCI_GETDOCPOINTER, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<int>(res);
+		return res;
 	}
 
-	void SetDocPointer(int pointer) const {
+	void SetDocPointer(sptr_t pointer) const {
 		Call(SCI_SETDOCPOINTER, SCI_UNUSED, pointer);
 	}
 
@@ -2067,22 +2066,22 @@ public:
 		Call(SCI_PARAUPEXTEND, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	Position PositionBefore(Position pos) const {
+	int PositionBefore(int pos) const {
 		sptr_t res = Call(SCI_POSITIONBEFORE, pos, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position PositionAfter(Position pos) const {
+	int PositionAfter(int pos) const {
 		sptr_t res = Call(SCI_POSITIONAFTER, pos, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position PositionRelative(Position pos, int relative) const {
+	int PositionRelative(int pos, int relative) const {
 		sptr_t res = Call(SCI_POSITIONRELATIVE, pos, relative);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void CopyRange(Position start, Position end) const {
+	void CopyRange(int start, int end) const {
 		Call(SCI_COPYRANGE, start, end);
 	}
 
@@ -2099,14 +2098,14 @@ public:
 		return static_cast<int>(res);
 	}
 
-	Position GetLineSelStartPosition(int line) const {
+	int GetLineSelStartPosition(int line) const {
 		sptr_t res = Call(SCI_GETLINESELSTARTPOSITION, line, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position GetLineSelEndPosition(int line) const {
+	int GetLineSelEndPosition(int line) const {
 		sptr_t res = Call(SCI_GETLINESELENDPOSITION, line, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void LineDownRectExtend() const {
@@ -2362,19 +2361,19 @@ public:
 		Call(SCI_COPYALLOWLINE, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	int GetCharacterPointer() const {
+	const char* GetCharacterPointer() const {
 		sptr_t res = Call(SCI_GETCHARACTERPOINTER, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<int>(res);
+		return reinterpret_cast<const char*>(res);
 	}
 
-	int GetRangePointer(int position, int rangeLength) const {
+	const char* GetRangePointer(int position, int rangeLength) const {
 		sptr_t res = Call(SCI_GETRANGEPOINTER, position, rangeLength);
-		return static_cast<int>(res);
+		return reinterpret_cast<const char*>(res);
 	}
 
-	Position GetGapPosition() const {
+	int GetGapPosition() const {
 		sptr_t res = Call(SCI_GETGAPPOSITION, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void IndicSetAlpha(int indicator, int alpha) const {
@@ -2534,14 +2533,14 @@ public:
 		Call(SCI_ADDUNDOACTION, token, flags);
 	}
 
-	Position CharPositionFromPoint(int x, int y) const {
+	int CharPositionFromPoint(int x, int y) const {
 		sptr_t res = Call(SCI_CHARPOSITIONFROMPOINT, x, y);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	Position CharPositionFromPointClose(int x, int y) const {
+	int CharPositionFromPointClose(int x, int y) const {
 		sptr_t res = Call(SCI_CHARPOSITIONFROMPOINTCLOSE, x, y);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void SetMouseSelectionRectangularSwitch(bool mouseSelectionRectangularSwitch) const {
@@ -2626,22 +2625,22 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void SetSelectionNCaret(int selection, Position pos) const {
+	void SetSelectionNCaret(int selection, int pos) const {
 		Call(SCI_SETSELECTIONNCARET, selection, pos);
 	}
 
-	Position GetSelectionNCaret(int selection) const {
+	int GetSelectionNCaret(int selection) const {
 		sptr_t res = Call(SCI_GETSELECTIONNCARET, selection, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetSelectionNAnchor(int selection, Position posAnchor) const {
+	void SetSelectionNAnchor(int selection, int posAnchor) const {
 		Call(SCI_SETSELECTIONNANCHOR, selection, posAnchor);
 	}
 
-	Position GetSelectionNAnchor(int selection) const {
+	int GetSelectionNAnchor(int selection) const {
 		sptr_t res = Call(SCI_GETSELECTIONNANCHOR, selection, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void SetSelectionNCaretVirtualSpace(int selection, int space) const {
@@ -2662,40 +2661,40 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void SetSelectionNStart(int selection, Position pos) const {
+	void SetSelectionNStart(int selection, int pos) const {
 		Call(SCI_SETSELECTIONNSTART, selection, pos);
 	}
 
-	Position GetSelectionNStart(int selection) const {
+	int GetSelectionNStart(int selection) const {
 		sptr_t res = Call(SCI_GETSELECTIONNSTART, selection, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetSelectionNEnd(int selection, Position pos) const {
+	void SetSelectionNEnd(int selection, int pos) const {
 		Call(SCI_SETSELECTIONNEND, selection, pos);
 	}
 
-	Position GetSelectionNEnd(int selection) const {
+	int GetSelectionNEnd(int selection) const {
 		sptr_t res = Call(SCI_GETSELECTIONNEND, selection, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetRectangularSelectionCaret(Position pos) const {
+	void SetRectangularSelectionCaret(int pos) const {
 		Call(SCI_SETRECTANGULARSELECTIONCARET, pos, SCI_UNUSED);
 	}
 
-	Position GetRectangularSelectionCaret() const {
+	int GetRectangularSelectionCaret() const {
 		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONCARET, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
-	void SetRectangularSelectionAnchor(Position posAnchor) const {
+	void SetRectangularSelectionAnchor(int posAnchor) const {
 		Call(SCI_SETRECTANGULARSELECTIONANCHOR, posAnchor, SCI_UNUSED);
 	}
 
-	Position GetRectangularSelectionAnchor() const {
+	int GetRectangularSelectionAnchor() const {
 		sptr_t res = Call(SCI_GETRECTANGULARSELECTIONANCHOR, SCI_UNUSED, SCI_UNUSED);
-		return static_cast<Position>(res);
+		return static_cast<int>(res);
 	}
 
 	void SetRectangularSelectionCaretVirtualSpace(int space) const {
@@ -2768,7 +2767,7 @@ public:
 		Call(SCI_SWAPMAINANCHORCARET, SCI_UNUSED, SCI_UNUSED);
 	}
 
-	int ChangeLexerState(Position start, Position end) const {
+	int ChangeLexerState(int start, int end) const {
 		sptr_t res = Call(SCI_CHANGELEXERSTATE, start, end);
 		return static_cast<int>(res);
 	}
@@ -2841,11 +2840,11 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void FindIndicatorShow(Position start, Position end) const {
+	void FindIndicatorShow(int start, int end) const {
 		Call(SCI_FINDINDICATORSHOW, start, end);
 	}
 
-	void FindIndicatorFlash(Position start, Position end) const {
+	void FindIndicatorFlash(int start, int end) const {
 		Call(SCI_FINDINDICATORFLASH, start, end);
 	}
 
@@ -2914,7 +2913,7 @@ public:
 		return static_cast<int>(res);
 	}
 
-	void Colourise(Position start, Position end) const {
+	void Colourise(int start, int end) const {
 		Call(SCI_COLOURISE, start, end);
 	}
 
