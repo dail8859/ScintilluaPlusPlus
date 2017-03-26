@@ -138,15 +138,14 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 			if (notify->updated & SC_UPDATE_SELECTION) {
 				ScintillaGateway editor(GetCurrentScintilla());
 
-				char buffer[256];
-				editor.GetLexerLanguage(buffer);
-				if (strcmp(buffer, "lpeg") == 0) {
+				if (editor.GetLexerLanguage() == "lpeg") {
 					std::string text;
 
-					editor.Call(SCI_PRIVATELEXERCALL, SCI_GETLEXERLANGUAGE, buffer);
+					char buffer[256];
+					editor.PrivateLexerCall(SCI_GETLEXERLANGUAGE, reinterpret_cast<sptr_t>(buffer));
 					text = buffer;
 					text += " (lpeg): ";
-					editor.Call(SCI_PRIVATELEXERCALL, editor.GetStyleAt(editor.GetCurrentPos()), buffer);
+					editor.PrivateLexerCall(editor.GetStyleAt(editor.GetCurrentPos()), reinterpret_cast<sptr_t>(buffer));
 					text += buffer;
 					text += ' ';
 					text += std::to_string(editor.GetStyleAt(editor.GetCurrentPos()));
@@ -168,12 +167,13 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 #else
 			wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\LexLPeg.dll");
 #endif
+			std::string wconfig_dir = UTF8FromString(config_dir);
 
 			ScintillaGateway editor1(nppData._scintillaMainHandle);
 			ScintillaGateway editor2(nppData._scintillaSecondHandle);
 
-			editor1.LoadLexerLibrary(UTF8FromString(config_dir).c_str());
-			editor2.LoadLexerLibrary(UTF8FromString(config_dir).c_str());
+			editor1.LoadLexerLibrary(wconfig_dir);
+			editor2.LoadLexerLibrary(wconfig_dir);
 
 			// Fall through - when launching N++, NPPN_BUFFERACTIVATED is received before
 			// NPPN_READY. Thus the first file can get ignored so now we can check now...
