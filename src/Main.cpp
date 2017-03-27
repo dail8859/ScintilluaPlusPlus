@@ -49,6 +49,17 @@ static HWND GetCurrentScintilla() {
 	else return nppData._scintillaSecondHandle;
 }
 
+static void GetFullPathFromBufferID(std::wstring &fname, uptr_t bufferid) {
+	auto len = SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, bufferid, NULL);
+
+	fname.resize(len + 1, L'\0');
+
+	SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, bufferid, (LPARAM)&fname[0]);
+
+	// Remove the null
+	fname.pop_back();
+}
+
 static std::string DetermineLanguageFromFileName(const std::string &fileName) {
 	for (const auto &kv : config.file_extensions) {
 		for (const auto &ext : kv.second) {
@@ -94,6 +105,17 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 	SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
 }
 
+static void CheckFileForNewLexer() {
+	ScintillaGateway editor(GetCurrentScintilla());
+
+	if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
+		wchar_t ext[MAX_PATH] = { 0 };
+		SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
+
+		SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
+	}
+}
+
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  reasonForCall, LPVOID lpReserved) {
 	switch (reasonForCall) {
 		case DLL_PROCESS_ATTACH:
@@ -125,6 +147,7 @@ extern "C" __declspec(dllexport) FuncItem * getFuncsArray(int *nbF) {
 
 extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 	static bool isReady = false;
+	static std::wstring fileBeingSaved;
 
 	// Somehow we are getting notifications from other scintilla handles at times
 	if (notify->nmhdr.hwndFrom != nppData._nppHandle &&
@@ -178,26 +201,40 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 			// Fall through - when launching N++, NPPN_BUFFERACTIVATED is received before
 			// NPPN_READY. Thus the first file can get ignored so now we can check now...
 		}
-		case NPPN_BUFFERACTIVATED: {
-			if (!isReady) break;
+		case NPPN_FILERENAMED:
+		case NPPN_BUFFERACTIVATED:
+			if (!isReady)
+				break;
 
-			ScintillaGateway editor(GetCurrentScintilla());
+			CheckFileForNewLexer();
+			break;
+		case NPPN_FILEBEFORESAVE: {
+			// Notepad++ does not notify when a file has been renamed using the normal
+			// "save as" dialog. So store the file name before the save then compare it
+			// to the file name immediately after the save occurs. If they are different then
+			// file has been renamed.
+			// NOTE: this is different from the user doing "File > Rename..." which sends the
+			// NPPN_FILERENAMED notification
 
-			if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
-				wchar_t ext[MAX_PATH] = { 0 };
-				SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
-
-				SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
-			}
+			GetFullPathFromBufferID(fileBeingSaved, notify->nmhdr.idFrom);
 			break;
 		}
 		case NPPN_FILESAVED: {
-			// If the ini file was edited, reload it
-			wchar_t fname[MAX_PATH] = { 0 };
-			SendMessage(nppData._nppHandle, NPPM_GETFULLPATHFROMBUFFERID, notify->nmhdr.idFrom, (LPARAM)fname);
-			if (wcscmp(fname, GetIniFilePath(&nppData)) == 0) {
+			std::wstring fileSaved;
+
+			GetFullPathFromBufferID(fileSaved, notify->nmhdr.idFrom);
+
+			if (fileSaved != fileBeingSaved) {
+				// The file was saved as a different file name
+				CheckFileForNewLexer();
+			}
+			else if (fileSaved.compare(GetIniFilePath(&nppData)) == 0) {
+				// If the ini file was edited, reload it
 				ConfigLoad(&nppData, &config);
 			}
+
+			fileBeingSaved.clear();
+
 			break;
 		}
 	}
