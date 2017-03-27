@@ -100,6 +100,14 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 
 	editor.Colourise(0, -1);
 
+	// Check for errors
+	char buffer[512] = { 0 };
+	editor.PrivateLexerCall(SCI_GETSTATUS, reinterpret_cast<sptr_t>(buffer));
+	if (strlen(buffer) > 0) {
+		MessageBox(nppData._nppHandle, StringFromUTF8(buffer).c_str(), NPP_PLUGIN_NAME, MB_OK | MB_ICONERROR);
+		return;
+	}
+
 	std::wstring ws = StringFromUTF8(language);
 	ws += L" (lpeg)";
 	SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(ws.c_str()));
@@ -162,18 +170,21 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 				ScintillaGateway editor(GetCurrentScintilla());
 
 				if (editor.GetLexerLanguage() == "lpeg") {
-					std::string text;
+					// Make sure no errors occured
+					if (editor.PrivateLexerCall(SCI_GETSTATUS, NULL) == 0) {
+						char buffer[512] = { 0 };
+						std::string text;
 
-					char buffer[256];
-					editor.PrivateLexerCall(SCI_GETLEXERLANGUAGE, reinterpret_cast<sptr_t>(buffer));
-					text = buffer;
-					text += " (lpeg): ";
-					editor.PrivateLexerCall(editor.GetStyleAt(editor.GetCurrentPos()), reinterpret_cast<sptr_t>(buffer));
-					text += buffer;
-					text += ' ';
-					text += std::to_string(editor.GetStyleAt(editor.GetCurrentPos()));
+						editor.PrivateLexerCall(SCI_GETLEXERLANGUAGE, reinterpret_cast<sptr_t>(buffer));
+						text = buffer;
+						text += " (lpeg): ";
+						editor.PrivateLexerCall(editor.GetStyleAt(editor.GetCurrentPos()), reinterpret_cast<sptr_t>(buffer));
+						text += buffer;
+						text += ' ';
+						text += std::to_string(editor.GetStyleAt(editor.GetCurrentPos()));
 
-					SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(StringFromUTF8(text).c_str()));
+						SendMessage(nppData._nppHandle, NPPM_SETSTATUSBAR, STATUSBAR_DOC_TYPE, reinterpret_cast<LPARAM>(StringFromUTF8(text).c_str()));
+					}
 				}
 			}
 			break;
