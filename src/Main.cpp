@@ -246,23 +246,7 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 				// If the ini file was edited, reload it
 				ConfigLoad(&nppData, &config);
 			}
-<<<<<<< HEAD
-			else
-			{
-				ScintillaGateway editor(GetCurrentScintilla());
-
-				if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
-					wchar_t ext[MAX_PATH] = { 0 };
-					SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
-
-					SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
-				}
-			}
-=======
-
 			fileBeingSaved.clear();
-
->>>>>>> refs/remotes/dail8859/master
 			break;
 		}
 	}
