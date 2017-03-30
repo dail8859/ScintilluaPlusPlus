@@ -1,22 +1,27 @@
-
 #include <windows.h>
-#include <commctrl.h>
-#include <richedit.h>
 #include "resource.h"
 
-
-//
-// Dialog resources
-//
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 IDD_ABOUTDLG DIALOGEX 0, 0, 223, 130
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_BORDER | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 0, 0, 0x1
-{
-    PUSHBUTTON      "Close", IDOK, 86, 109, 50, 14
-    GROUPBOX        "", IDC_VERSION, 10, 9, 201, 93, BS_CENTER
-    LTEXT           "Author: Justin Dailey <dail8859@yahoo.com>", IDC_STATIC, 30, 26, 180, 8
-    LTEXT           "The Scintillua++ code is hosted on", IDC_STATIC, 30, 43, 180, 8
-    LTEXT           "GitHub", IDC_GITHUB, 142, 43, 27, 8, SS_LEFT | SS_NOTIFY, WS_EX_LEFT
-    LTEXT           "This code is licensed under GPLv2", IDC_STATIC, 30, 80, 180, 8
-}
+BEGIN
+    PUSHBUTTON      "Close",IDOK,86,109,50,14
+    GROUPBOX        "",IDC_VERSION,10,9,201,93,BS_CENTER
+    LTEXT           "Author: Justin Dailey <dail8859@yahoo.com>",IDC_STATIC,30,26,180,8
+    LTEXT           "The Scintillua++ code is hosted on",IDC_STATIC,30,43,180,8
+    LTEXT           "GitHub",IDC_GITHUB,142,43,27,8,SS_NOTIFY
+    LTEXT           "This code is licensed under GPLv2",IDC_STATIC,30,80,180,8
+END
+
+IDD_LANGUAGEDLG DIALOGEX 0, 0, 245, 74
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Select Language"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,120,53,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,174,53,50,14
+    LTEXT           "Language:",IDC_STATIC,15,12,90,8
+    COMBOBOX        IDC_COMBOLANGUAGE,15,25,206,30,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+END
+
+

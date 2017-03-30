@@ -19,6 +19,7 @@
 #include "PluginDefinition.h"
 #include "Version.h"
 #include "AboutDialog.h"
+#include "LanguageDialog.h"
 #include "resource.h"
 #include "Config.h"
 #include "ScintillaGateway.h"
@@ -35,9 +36,11 @@ static bool DetermineLanguageFromFileName();
 // Menu callbacks
 static void editSettings();
 static void showAbout();
+static void setLanguage();
 
 FuncItem funcItem[] = {
 	{ TEXT("Edit Settings..."), editSettings, 0, false, nullptr },
+	{ TEXT("Set Language..."), setLanguage, 0, false, nullptr },
 	{ TEXT(""), nullptr, 0, false, nullptr }, // separator
 	{ TEXT("About..."), showAbout, 0, false, nullptr }
 };
@@ -198,6 +201,17 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 			if (wcscmp(fname, GetIniFilePath(&nppData)) == 0) {
 				ConfigLoad(&nppData, &config);
 			}
+			else
+			{
+				ScintillaGateway editor(GetCurrentScintilla());
+
+				if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
+					wchar_t ext[MAX_PATH] = { 0 };
+					SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
+
+					SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
+				}
+			}
 			break;
 		}
 	}
@@ -219,4 +233,12 @@ static void editSettings() {
 
 static void showAbout() {
 	ShowAboutDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_ABOUTDLG), nppData._nppHandle);
+}
+
+static void setLanguage() {
+	std::string language = ShowLanguageDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_LANGUAGEDLG), nppData._nppHandle, config);
+	if (!language.empty()) {
+		ScintillaGateway editor(GetCurrentScintilla());
+		SetLexer(editor, language);
+	}
 }
