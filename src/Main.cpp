@@ -16,27 +16,41 @@
 // along with this program; if not, write to the Free Software
 // Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+#include <string>
+#include <fstream>
+#include <streambuf>
+
 #include "PluginDefinition.h"
 #include "Version.h"
 #include "AboutDialog.h"
+#include "LanguageDialog.h"
 #include "resource.h"
 #include "Config.h"
 #include "ScintillaGateway.h"
 #include "Utilities.h"
+#include "menuCmdID.h"
 
 static HANDLE _hModule;
 static NppData nppData;
 static Configuration config;
+static std::map<uptr_t, std::string> bufferLanguages;
 
 // Helper functions
 static HWND GetCurrentScintilla();
-static bool DetermineLanguageFromFileName();
+static std::string DetermineLanguageFromFileName(const std::string &fileName);
 
 // Menu callbacks
 static void editSettings();
 static void showAbout();
+static void setLanguage();
+static void editLanguageDefinition();
+static void createNewLanguageDefinition();
 
 FuncItem funcItem[] = {
+	{ TEXT("Set Language..."), setLanguage, 0, false, nullptr },
+	{ TEXT(""), nullptr, 0, false, nullptr }, // separator
+	{ TEXT("Create New Language Definition..."), createNewLanguageDefinition, 0, false, nullptr },
+	{ TEXT("Edit Language Definition..."), editLanguageDefinition, 0, false, nullptr },
 	{ TEXT("Edit Settings..."), editSettings, 0, false, nullptr },
 	{ TEXT(""), nullptr, 0, false, nullptr }, // separator
 	{ TEXT("About..."), showAbout, 0, false, nullptr }
@@ -115,12 +129,16 @@ static void SetLexer(const ScintillaGateway &editor, const std::string &language
 
 static void CheckFileForNewLexer() {
 	ScintillaGateway editor(GetCurrentScintilla());
+	uptr_t bufferid = SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0);
+	const auto search = bufferLanguages.find(bufferid);
 
-	if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
+	if (search != bufferLanguages.end()) {
+		SetLexer(editor, search->second);
+	}
+	else if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
 		wchar_t ext[MAX_PATH] = { 0 };
 		SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
-
-		SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext).c_str()));
+		SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext)));
 	}
 }
 
@@ -215,7 +233,6 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 		case NPPN_BUFFERACTIVATED:
 			if (!isReady)
 				break;
-
 			CheckFileForNewLexer();
 			break;
 		case NPPN_FILEBEFORESAVE: {
@@ -242,11 +259,26 @@ extern "C" __declspec(dllexport) void beNotified(const SCNotification *notify) {
 				// If the ini file was edited, reload it
 				ConfigLoad(&nppData, &config);
 			}
+			else
+			{
+				ScintillaGateway editor(GetCurrentScintilla());
+
+				if (config.over_ride || editor.GetLexer() == 1 /*SCLEX_NULL*/) {
+					wchar_t ext[MAX_PATH] = { 0 };
+					SendMessage(nppData._nppHandle, NPPM_GETFILENAME, MAX_PATH, (LPARAM)ext);
+
+					SetLexer(editor, DetermineLanguageFromFileName(UTF8FromString(ext)));
+				}
+			}
 
 			fileBeingSaved.clear();
 
 			break;
 		}
+		case NPPN_FILECLOSED:
+			// Try to remove it
+			bufferLanguages.erase(notify->nmhdr.idFrom);
+			break;
 	}
 	return;
 }
@@ -266,4 +298,53 @@ static void editSettings() {
 
 static void showAbout() {
 	ShowAboutDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_ABOUTDLG), nppData._nppHandle);
+}
+
+static void setLanguage() {
+	std::string language = ShowLanguageDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_LANGUAGEDLG), nppData._nppHandle, &config);
+
+	if (!language.empty()) {
+		uptr_t bufferid = SendMessage(nppData._nppHandle, NPPM_GETCURRENTBUFFERID, 0, 0);
+		bufferLanguages[bufferid] = language;
+		ScintillaGateway editor(GetCurrentScintilla());
+		SetLexer(editor, language);
+	}
+}
+
+static void editLanguageDefinition() {
+	std::string language = ShowLanguageDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_LANGUAGEDLG), nppData._nppHandle, &config);
+
+	if (!language.empty()) {
+		wchar_t config_dir[MAX_PATH] = { 0 };
+		SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
+		wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\");
+		wcscat_s(config_dir, MAX_PATH, StringFromUTF8(language).c_str());
+		wcscat_s(config_dir, MAX_PATH, L".lua");
+		SendMessage(nppData._nppHandle, NPPM_DOOPEN, 0, (LPARAM)config_dir);
+	}
+}
+
+static void createNewLanguageDefinition() {
+	wchar_t config_dir[MAX_PATH] = { 0 };
+	SendMessage(nppData._nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)config_dir);
+	wcscat_s(config_dir, MAX_PATH, L"\\Scintillua++\\template.txt");
+
+	std::ifstream t(config_dir);
+	std::string str;
+
+	t.seekg(0, std::ios::end);
+	str.reserve(static_cast<size_t>(t.tellg()));
+	t.seekg(0, std::ios::beg);
+	str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+
+	SendMessage(nppData._nppHandle, NPPM_MENUCOMMAND, 0, (LPARAM)IDM_FILE_NEW);
+
+	ScintillaGateway editor(GetCurrentScintilla());
+	editor.SetText(str);
+	if (config.over_ride) {
+		SetLexer(editor, "lua");
+	}
+	else {
+		SendMessage(nppData._nppHandle, NPPM_SETCURRENTLANGTYPE, 0, (LPARAM)L_LUA);
+	}
 }

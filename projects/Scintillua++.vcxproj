@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\AboutDialog.h" />
     <ClInclude Include="..\src\Config.h" />
+    <ClInclude Include="..\src\LanguageDialog.h" />
     <ClInclude Include="..\src\Utilities.h" />
     <ClInclude Include="..\src\Hyperlinks.h" />
     <ClInclude Include="..\src\menuCmdID.h" />
@@ -38,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AboutDialog.cpp" />
+    <ClCompile Include="..\src\LanguageDialog.cpp" />
     <ClCompile Include="..\src\Config.cpp" />
     <ClCompile Include="..\src\Hyperlinks.cpp" />
     <ClCompile Include="..\src\Main.cpp" />
