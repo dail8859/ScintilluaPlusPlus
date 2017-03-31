@@ -19,14 +19,31 @@
 #include "Config.h"
 #include "Utilities.h"
 
+#include <Shlwapi.h>
+
 const wchar_t *GetIniFilePath(const NppData *nppData) {
-	static wchar_t iniPath[MAX_PATH];
-	SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)iniPath);
-	wcscat_s(iniPath, MAX_PATH, L"\\Scintillua++.ini");
+	static wchar_t iniPath[MAX_PATH] = { 0 };
+
+	if (iniPath[0] == 0) {
+		SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)iniPath);
+		wcscat_s(iniPath, MAX_PATH, L"\\Scintillua++.ini");
+	}
+
 	return iniPath;
 }
 
+void EnsureConfigFileExists(const NppData *nppData) {
+	if (PathFileExists(GetIniFilePath(nppData)) == FALSE) {
+		wchar_t defaultPath[MAX_PATH] = { 0 };
+		SendMessage(nppData->_nppHandle, NPPM_GETPLUGINSCONFIGDIR, MAX_PATH, (LPARAM)defaultPath);
+		wcscat_s(defaultPath, MAX_PATH, L"\\Scintillua++\\default.ini");
+		CopyFile(defaultPath, GetIniFilePath(nppData), TRUE);
+	}
+}
+
 void ConfigLoad(const NppData *nppData, Configuration *config) {
+	EnsureConfigFileExists(nppData);
+
 	const wchar_t *iniPath = GetIniFilePath(nppData);
 
 	FILE *file = _wfopen(iniPath, L"r");

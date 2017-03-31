@@ -6,8 +6,8 @@ Notepad++ plugin for supporting [Scintillua's](https://foicica.com/scintillua/) 
 ## Installation
 Download a release from the [Release](https://github.com/dail8859/ScintilluaPlusPlus/releases) page. Extract the zip file then:
 
-1. Copy the `Scintillua++.dll` to Notepad++'s plugin directory
-1. Copy the contents of the `config` directory into Notepad++'s plugin config directory - most likely located under `%APPDATA%`
+1. Copy the `Scintillua++.dll` (or `Scintillua++_64.dll` for the 64bit version) to Notepad++'s plugin directory
+1. Copy the `Scintillua++` directory into Notepad++'s plugin config directory - most likely located under `%APPDATA%`
 
 ## Usage
 This auto detects files based on file names or file extensions. By default this will only parse files that Notepad++ does not recognize. Setting the `override` flag to `true` in the settings file will parse files even if Notepad++ already supports the file type.

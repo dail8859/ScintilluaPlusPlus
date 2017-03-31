@@ -5,14 +5,14 @@ function make_release($build, $postfix)
 	Remove-Item .\ScintilluaPlusPlus$postfix.zip -ErrorAction SilentlyContinue
 	Remove-Item .\release\* -Force -Recurse -ErrorAction SilentlyContinue
 
-	New-Item -ItemType directory -Path .\release\config\Scintillua++
+	New-Item -ItemType directory -Path .\release\Scintillua++
 
 	Copy-Item .\bin\Release_$build\Scintillua++$postfix.dll .\release
-	Copy-Item .\bin\Release_$build\LexLPeg$postfix.dll .\release\config\Scintillua++
+	Copy-Item .\bin\Release_$build\LexLPeg$postfix.dll .\release\Scintillua++
 
-	Copy-Item .\extra\Scintillua++.ini .\release\config
-	Copy-Item .\ext\Scintillua\lexers\* .\release\config\Scintillua++ -recurse
-	Copy-Item .\extra\npp.lua .\release\config\Scintillua++\themes
+	Copy-Item .\extra\default.ini .\release\Scintillua++
+	Copy-Item .\ext\Scintillua\lexers\* .\release\Scintillua++ -recurse
+	Copy-Item .\extra\npp.lua .\release\Scintillua++\themes
 
 	Compress-Archive -Path .\release\* -DestinationPath .\ScintilluaPlusPlus$postfix.zip
 

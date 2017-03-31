@@ -141,7 +141,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  reasonForCall, LPVOID lpReserved) {
 
 extern "C" __declspec(dllexport) void setInfo(NppData notepadPlusData) {
 	nppData = notepadPlusData;
-	ConfigLoad(&nppData, &config);
 }
 
 extern "C" __declspec(dllexport) const wchar_t * getName() {
