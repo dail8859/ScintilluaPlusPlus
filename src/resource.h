@@ -1,7 +1,4 @@
-//{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ generated include file.
-// Used by resource.rc
-//
+
 #define IDD_ABOUTDLG                    101
 #define IDD_LANGUAGEDLG                 102
 #define IDC_GITHUB                      1000
