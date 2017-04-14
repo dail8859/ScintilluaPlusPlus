@@ -17,7 +17,7 @@ This comes with a default theme that is very similar to Notepad++'s default them
 You can also create your own custom lexers using the [LPeg](http://www.inf.puc-rio.br/~roberto/lpeg/) Lua library.
 
 ## Development
-The code has been developed using MSVC 2013. Building the code will generate the DLL which can be used by Notepad++. For convenience, MSVC automatically copies the DLL and files into Notepad++'s directories.
+The code has been developed using MSVC 2015. Building the code will generate the DLL which can be used by Notepad++. For convenience, MSVC automatically copies the DLL and files into Notepad++'s directories.
 
 ## License
 This code is released under the [GNU General Public License version 2](http://www.gnu.org/licenses/gpl-2.0.txt).
