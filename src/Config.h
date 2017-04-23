@@ -19,6 +19,8 @@
 #pragma once
 
 #include "PluginDefinition.h"
+#include "NotepadPPGateway.h"
+
 #include <map>
 #include <string>
 #include <vector>
@@ -30,6 +32,6 @@ typedef struct Configuration {
 } Configuration;
 
 bool MatchWild(const char *pattern, size_t lenPattern, const char *fileName, bool caseSensitive);
-const wchar_t *GetIniFilePath(const NppData *nppData);
-void ConfigLoad(const NppData *nppData, Configuration *config);
+const wchar_t *GetIniFilePath(const NotepadPPGateway &npp);
+void ConfigLoad(const NotepadPPGateway &npp, Configuration *config);
 void ConfigSave(const NppData *nppData, const Configuration *config);

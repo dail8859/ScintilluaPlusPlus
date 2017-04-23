@@ -22,6 +22,7 @@
     <ClInclude Include="..\src\AboutDialog.h" />
     <ClInclude Include="..\src\Config.h" />
     <ClInclude Include="..\src\LanguageDialog.h" />
+    <ClInclude Include="..\src\NotepadPPGateway.h" />
     <ClInclude Include="..\src\Utilities.h" />
     <ClInclude Include="..\src\Hyperlinks.h" />
     <ClInclude Include="..\src\menuCmdID.h" />
