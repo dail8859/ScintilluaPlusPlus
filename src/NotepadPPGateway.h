@@ -228,5 +228,5 @@ public:
 		return static_cast<int>(ret);
 	}
 
-	NPPM_GETCURRENTCOLUMN
+	//NPPM_GETCURRENTCOLUMN
 };
