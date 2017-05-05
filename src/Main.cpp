@@ -74,6 +74,8 @@ static void SetLexer(const std::string &language) {
 	if (language.empty())
 		return;
 
+	npp.SetCurrentLangType(L_TEXT);
+
 	auto config_dir = npp.GetPluginsConfigDir();
 	config_dir += L"\\Scintillua++";
 
@@ -281,8 +283,6 @@ static void setLanguage() {
 	std::string language = ShowLanguageDialog((HINSTANCE)_hModule, MAKEINTRESOURCE(IDD_LANGUAGEDLG), nppData._nppHandle, &config);
 
 	if (!language.empty()) {
-		npp.SetCurrentLangType(L_TEXT);
-
 		uptr_t bufferid = npp.GetCurrentBufferID();
 		bufferLanguages[bufferid] = language;
 		SetLexer(language);
