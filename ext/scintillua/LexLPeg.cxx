@@ -473,7 +473,7 @@ class LexerLPeg : public ILexer {
 			// Determine which styles are language whitespace styles
 			// ([lang]_whitespace). This is necessary for determining which language
 			// to start lexing with.
-			char style_name[50];
+			char style_name[50] = { 0 };
 			for (int i = 0; i <= STYLE_MAX; i++) {
 				PrivateCall(i, reinterpret_cast<void *>(style_name));
 				ws[i] = strstr(style_name, "whitespace") ? true : false;
@@ -495,7 +495,7 @@ class LexerLPeg : public ILexer {
 	 * @param str The string to copy.
 	 * @return number of bytes needed to hold *str*
 	 */
-	void *StringResult(long lparam, const char *str) {
+	void *StringResult(sptr_t lparam, const char *str) {
 		if (lparam) strcpy(reinterpret_cast<char *>(lparam), str);
 		return reinterpret_cast<void *>(strlen(str));
 	}
@@ -606,13 +606,13 @@ public:
 			if (lua_pcall(L, 3, 1, 0) != LUA_OK) l_error(L);
 			// Style the text from the token table returned.
 			if (lua_istable(L, -1)) {
-				int len = lua_rawlen(L, -1);
+				size_t len = lua_rawlen(L, -1);
 				if (len > 0) {
 					styler.StartAt(startPos);
 					styler.StartSegment(startPos);
 					l_getlexerfield(L, "_TOKENSTYLES");
 					// Loop through token-position pairs.
-					for (int i = 1; i < len; i += 2) {
+					for (int i = 1; i < static_cast<int>(len); i += 2) {
 						style = STYLE_DEFAULT;
 						lua_rawgeti(L, -2, i), lua_rawget(L, -2); // _TOKENSTYLES[token]
 						if (!lua_isnil(L, -1)) style = lua_tointeger(L, -1);
