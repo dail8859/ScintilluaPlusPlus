@@ -1588,7 +1588,7 @@ Return:
 * number
 
 <a id="lexer.load"></a>
-### `lexer.load` (name, alt\_name)
+### `lexer.load` (name, alt\_name, cache)
 
 Initializes or loads and returns the lexer of string name *name*.
 Scintilla calls this function in order to load a lexer. Parent lexers also
@@ -1601,6 +1601,10 @@ Fields:
 * `name`: The name of the lexing language.
 * `alt_name`: The alternate name of the lexing language. This is useful for
   embedding the same child lexer with multiple sets of start and end tokens.
+* `cache`: Flag indicating whether or not to load lexers from the cache.
+  This should only be `true` when initially loading a lexer (e.g. not from
+  within another lexer for embedding purposes).
+  The default value is `false`.
 
 Return:
 

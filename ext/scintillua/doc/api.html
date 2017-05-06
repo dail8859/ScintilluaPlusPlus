@@ -1895,7 +1895,7 @@ starts from 1.</p>
 
 <p><a id="lexer.load"></a></p>
 
-<h3><code>lexer.load</code> (name, alt_name)</h3>
+<h3><code>lexer.load</code> (name, alt_name, cache)</h3>
 
 <p>Initializes or loads and returns the lexer of string name <em>name</em>.
 Scintilla calls this function in order to load a lexer. Parent lexers also
@@ -1909,6 +1909,10 @@ library.</p>
 <li><code>name</code>: The name of the lexing language.</li>
 <li><code>alt_name</code>: The alternate name of the lexing language. This is useful for
 embedding the same child lexer with multiple sets of start and end tokens.</li>
+<li><code>cache</code>: Flag indicating whether or not to load lexers from the cache.
+This should only be <code>true</code> when initially loading a lexer (e.g. not from
+within another lexer for embedding purposes).
+The default value is <code>false</code>.</li>
 </ul>
 
 

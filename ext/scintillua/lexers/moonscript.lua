@@ -1,4 +1,4 @@
--- Copyright 2017 Alejandro Baez (https://keybase.io/baez). See LICENSE.
+-- Copyright 2016-2017 Alejandro Baez (https://keybase.io/baez). See LICENSE.
 -- Moonscript LPeg lexer.
 
 local l = require('lexer')
@@ -163,7 +163,6 @@ M._tokenstyles = {
   fndef = l.STYLE_PREPROCESSOR,
   symbol = l.STYLE_EMBEDDED,
   tbl_key = l.STYLE_REGEX,
-  error = l.STYLE_ERROR,
 }
 
 M._FOLDBYINDENTATION = true

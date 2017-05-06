@@ -67,6 +67,7 @@ see `lexers/lpeg.properties`.
 1. LilyPond
 1. Lisp`*`
 1. Literate Coffeescript
+1. Logtalk
 1. Lua`*`
 1. Makefile
 1. Man Page
@@ -91,6 +92,7 @@ see `lexers/lpeg.properties`.
 1. Pure
 1. Python
 1. R
+1. rc`*`
 1. REBOL`*`
 1. Rexx`*`
 1. ReStructuredText`*`
@@ -103,6 +105,7 @@ see `lexers/lpeg.properties`.
 1. Scheme`*`
 1. Shell`*`
 1. Smalltalk`*`
+1. Standard ML
 1. SNOBOL4
 1. SQL
 1. TaskPaper
